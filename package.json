@@ -1,0 +1,19 @@
+{
+  "name": "ishtar",
+  "version": "0.0.0",
+  "main": "core.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "immutable": "^2.0.17"
+  },
+  "devDependencies": {
+    "gulp-mocha": "~1.1.0",
+    "gulp": "^3.8.8",
+    "should": "^4.0.4"
+  },
+  "scripts": {
+    "test": "gulp test"
+  }
+}
