@@ -47,38 +47,53 @@ extend(Vec, "Seq", {
   cons: function(coll, el) { return Vec(el).concat(coll).toVector(); }
 });
 
+function Cons(el, coll) {
+  if (!(this instanceof $Cons)) {
+    return new $Cons(el, coll);
+  }
+  this.el = el;
+  this.coll = coll;
+}
+var $Cons = Cons;
+
+extend(Cons, "Seq", {
+  seq: function(coll) { return coll; },
+  first: function(coll) { return coll.el; },
+  rest: function(coll) { return coll.coll; },
+  cons: function(coll, el) { return Cons(el, coll); }
+});
+
 function LazySeq(fn) {
   if (!(this instanceof $LazySeq)) {
     return new $LazySeq(fn);
   }
   this.fn = fn;
   this.seq = nil;
-  this.storedVal = nil;
+  this.cachedVal = nil;
 }
 var $LazySeq = LazySeq;
-LazySeq.prototype.getStoredVal = function() {
+LazySeq.prototype.getCachedVal = function() {
   if (this.fn !== nil) {
-    this.storedVal = this.fn();
+    this.cachedVal = this.fn();
     this.fn = nil;
   }
-  if (this.storedVal !== nil) {
-    return this.storedVal;
+  if (this.cachedVal !== nil) {
+    return this.cachedVal;
   }
   return this.seq;
 }
 
 extend(LazySeq, "Seq", {
   seq: function(coll) {
-    coll.getStoredVal();
-    if (coll.storedVal !== nil) {
-      var x = coll.storedVal;
-      coll.storedVal = nil;
+    coll.getCachedVal();
+    if (coll.cachedVal !== nil) {
+      var x = coll.cachedVal;
+      coll.cachedVal = nil;
       while(x instanceof $LazySeq) {
-        x = x.getStoredVal();
+        x = x.getCachedVal();
       }
       coll.seq = Seq.seq(x);
     }
-    console.log(coll.seq);
     return coll.seq;
   },
   first: function(coll) { 
@@ -91,14 +106,10 @@ extend(LazySeq, "Seq", {
   },
   rest: function(coll) { 
     Seq.seq(coll);
-    if (coll.seq !== nil) {
-      return nil;
-    } else {
-      return Seq.rest(coll.seq);
-    }
+    return Seq.rest(coll.seq);
   },
   cons: function(coll, el) {
-    return Seq.cons(Seq.seq(coll), el);
+    return Cons(el, coll);
   }
 });
 
