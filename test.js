@@ -4,6 +4,15 @@ var should = require('should');
 
 ishtar.exports(global);
 
+describe('map', function() {
+  it('works on arrays', function() {
+    map(function(x) { return x + 1; }, [1,2,3]).should.eql([2,3,4]);
+  });
+  it('works on Vectors', function() {
+    equals(map(function(x) { return x + 1; }, Vec(1,2,3)), Vec(2,3,4)).should.be.true;
+  });
+});
+
 describe('protocols', function(){
 
   var Seq = defprotocol('seq', {
@@ -32,8 +41,8 @@ describe('protocols', function(){
 
   describe('#extend() #satisfies()', function() {
     it("extends a protocol", function() {
-      satisfies('seq', vec()).should.be.false;
-      extend(vec, 'seq', {
+      satisfies('seq', Vec()).should.be.false;
+      extend(Vec, 'seq', {
 	head: function(coll) {
 	  return coll.first();
 	},
@@ -41,12 +50,12 @@ describe('protocols', function(){
 	  return coll.shift();
 	}
       });
-      satisfies('seq', vec()).should.be.true;
-      var list = vec(1,2,3),
+      satisfies('seq', Vec()).should.be.true;
+      var list = Vec(1,2,3),
           hd = Seq.head(list),
 	  tl = Seq.tail(list);
       hd.should.equal(1);
-      equals(tl, vec(2,3)).should.be.true;
+      equals(tl, Vec(2,3)).should.be.true;
     });
     it("throws for things that do not implement the protocol", function() {
       (function() { Seq.head([1,2,3]) }).should.throw();
