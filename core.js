@@ -21,30 +21,31 @@ var Seq = defprotocol("Seq", {
   cons: {
     doc: "Constructs a new collection with x as the first element and coll as the rest",
     args: ['coll', 'x']
+  },
+  seq: {
+    doc: "Returns a seq on the collection. If the collection is empty, returns nil",
+    args: ['coll']
   }
 });
 
-function nil(type) {
+function NIL() {
   // represents nothingness, not there (next element of an empty list)
-  // currently used to maintain proper dispatch for protocols,
-  // impls can use nil instances as non-existent instance of their Type
-  this.type = type;
 }
-nil.prototype.toString = function() { return "nil"; };
-function isNil(x) { return x instanceof nil || x === nil; };
+var nil = new NIL();
+function isNil(x) { return x === nil; };
 
-var nilArr = new nil(Array);
 extend(Array, "Seq", {
-  first: function(coll) { return coll.length ? coll[0] : nilArr; },
-  rest: function(coll) { return isNil(coll) ? [] : coll.slice(1); },
-  cons: function(coll, el) { return isNil(coll) ? [el] : [el].concat(coll); }
+  first: function(coll) { return coll.length ? coll[0] : nil; },
+  rest: function(coll) { return coll.slice(1); },
+  cons: function(coll, el) { return [el].concat(coll); },
+  seq: function(coll) { return coll.length ? coll : nil; }
 });
 
-var nilVec = new nil(Vec);
 extend(Vec, "Seq", {
-  first: function(coll) { return coll.length ? coll.first() : nilVec; },
-  rest: function(coll) { return isNil(coll) ? Vec() : coll.rest().toVector(); },
-  cons: function(coll, el) { return isNil(coll) ? Vec(el) : Vec(el).concat(coll).toVector(); }
+  first: function(coll) { return coll.length ? coll.first() : nil; },
+  rest: function(coll) { return coll.rest().toVector(); },
+  cons: function(coll, el) { return Vec(el).concat(coll).toVector(); },
+  seq: function(coll) { return coll.length ? coll : nil; }
 });
 
 function map(fn, coll) {
@@ -63,11 +64,14 @@ function map(fn, coll) {
 	  };
 	};
     case 2: // regular coll map
-	// TODO: return a lazy sequence instead of eager cons
-	var head = Seq.first(coll),
-	    tail = Seq.rest(coll);
-	if (isNil(head)) return head;
-	return Seq.cons(map(fn, tail), fn(head));
+	  // TODO: return a lazy sequence instead of eager cons
+      if (Seq.seq(coll) === nil) {
+        return coll;
+      } else {
+        var head = Seq.first(coll),
+	        tail = Seq.rest(coll);
+	    return Seq.cons(map(fn, tail), fn(head));
+      }
     default: return nil;
   }
 }
@@ -122,8 +126,7 @@ function defprotocol(protocol, methods) {
 }
 
 function getDispatchName(x) {
-  var name = x.constructor.name;
-  return (name === "nil") ? x.type.name : name;
+  return x.constructor.name;
 }
 
 function extend(type, protocol, fns) {

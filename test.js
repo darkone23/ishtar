@@ -1,7 +1,7 @@
 var assert = require("assert");
-var ishtar = require("./core");
 var should = require('should');
 
+var ishtar = require("./core");
 ishtar.exports(global);
 
 describe('map', function() {
@@ -9,7 +9,9 @@ describe('map', function() {
     map(function(x) { return x + 1; }, [1,2,3]).should.eql([2,3,4]);
   });
   it('works on Vectors', function() {
-    equals(map(function(x) { return x + 1; }, Vec(1,2,3)), Vec(2,3,4)).should.be.true;
+    var mapped = map(function(x) { return x + 1; }, Vec(1,2,3));
+    console.log(mapped);
+    equals(mapped, Vec(2,3,4)).should.be.true;
   });
 });
 
@@ -43,12 +45,12 @@ describe('protocols', function(){
     it("extends a protocol", function() {
       satisfies('seq', Vec()).should.be.false;
       extend(Vec, 'seq', {
-	head: function(coll) {
-	  return coll.first();
-	},
-	tail: function(coll) {
-	  return coll.shift();
-	}
+	    head: function(coll) {
+	      return coll.first();
+	    },
+	    tail: function(coll) {
+	      return coll.shift();
+	    }
       });
       satisfies('seq', Vec()).should.be.true;
       var list = Vec(1,2,3),
@@ -66,4 +68,5 @@ describe('protocols', function(){
       Seq.tail([1,2,3]).should.eql([2,3]);
     });
   });
+
 });
