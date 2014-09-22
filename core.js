@@ -10,6 +10,10 @@ var protocols = Map();
 var protofns = Map();
 
 var Seq = defprotocol("Seq", {
+  seq: {
+    doc: "Returns a seq on the collection. If the collection is empty, returns nil",
+    args: ['coll']
+  },
   first: {
     doc: "Returns the first item in the collection or the nil coll",
     args: ['coll']
@@ -21,31 +25,81 @@ var Seq = defprotocol("Seq", {
   cons: {
     doc: "Constructs a new collection with x as the first element and coll as the rest",
     args: ['coll', 'x']
-  },
-  seq: {
-    doc: "Returns a seq on the collection. If the collection is empty, returns nil",
-    args: ['coll']
   }
 });
 
-function NIL() {
-  // represents nothingness, not there (next element of an empty list)
-}
+// represents nothingness, not there (next element of an empty list)
+function NIL() {};
+NIL.prototype.toString = function() { return "nil"; };
 var nil = new NIL();
-function isNil(x) { return x === nil; };
 
 extend(Array, "Seq", {
+  seq: function(coll) { return coll.length ? coll : nil; },
   first: function(coll) { return coll.length ? coll[0] : nil; },
   rest: function(coll) { return coll.slice(1); },
-  cons: function(coll, el) { return [el].concat(coll); },
-  seq: function(coll) { return coll.length ? coll : nil; }
+  cons: function(coll, el) { return [el].concat(coll); }
 });
 
 extend(Vec, "Seq", {
+  seq: function(coll) { return coll.length ? coll : nil; },
   first: function(coll) { return coll.length ? coll.first() : nil; },
   rest: function(coll) { return coll.rest().toVector(); },
-  cons: function(coll, el) { return Vec(el).concat(coll).toVector(); },
-  seq: function(coll) { return coll.length ? coll : nil; }
+  cons: function(coll, el) { return Vec(el).concat(coll).toVector(); }
+});
+
+function LazySeq(fn) {
+  if (!(this instanceof $LazySeq)) {
+    return new $LazySeq(fn);
+  }
+  this.fn = fn;
+  this.seq = nil;
+  this.storedVal = nil;
+}
+var $LazySeq = LazySeq;
+LazySeq.prototype.getStoredVal = function() {
+  if (this.fn !== nil) {
+    this.storedVal = this.fn();
+    this.fn = nil;
+  }
+  if (this.storedVal !== nil) {
+    return this.storedVal;
+  }
+  return this.seq;
+}
+
+extend(LazySeq, "Seq", {
+  seq: function(coll) {
+    coll.getStoredVal();
+    if (coll.storedVal !== nil) {
+      var x = coll.storedVal;
+      coll.storedVal = nil;
+      while(x instanceof $LazySeq) {
+        x = x.getStoredVal();
+      }
+      coll.seq = Seq.seq(x);
+    }
+    console.log(coll.seq);
+    return coll.seq;
+  },
+  first: function(coll) { 
+    Seq.seq(coll);
+    if (coll.seq !== nil) {
+      return Seq.first(coll.seq);
+    } else {
+      return nil;
+    }
+  },
+  rest: function(coll) { 
+    Seq.seq(coll);
+    if (coll.seq !== nil) {
+      return nil;
+    } else {
+      return Seq.rest(coll.seq);
+    }
+  },
+  cons: function(coll, el) {
+    return Seq.cons(Seq.seq(coll), el);
+  }
 });
 
 function map(fn, coll) {
@@ -53,24 +107,25 @@ function map(fn, coll) {
   // Requires the collection implement the 'Seq' protocol
   switch (arguments.length) {
     case 1: // transducer
-	return function(f1) {
-	  return function(result, input) {
-	    switch (arguments.length) {
-	      case 0: return f1();
-	      case 1: return f1(result);
-	      case 2: return f1(result, fn(input));
-	      default: return nil;
-	    };
-	  };
-	};
-    case 2: // regular coll map
-	  // TODO: return a lazy sequence instead of eager cons
+      return function(step) {
+        return function(result, input) {
+          switch (arguments.length) {
+            case 0: return step();
+            case 1: return step(result);
+            case 2: return step(result, fn(input));
+            default: return nil;
+          };
+        };
+      };
+    case 2: // regular seqable
       if (Seq.seq(coll) === nil) {
         return coll;
       } else {
-        var head = Seq.first(coll),
-	        tail = Seq.rest(coll);
-	    return Seq.cons(map(fn, tail), fn(head));
+        return LazySeq(function() {
+          var head = Seq.first(coll),
+              tail = Seq.rest(coll);
+          return Seq.cons(map(fn, tail), fn(head));
+        });
       }
     default: return nil;
   }
@@ -156,7 +211,6 @@ module.exports = {
   cons: Seq.cons,
 
   nil: nil,
-  isNil: isNil,
 
   // iter / xform 
   doseq: doseq,
