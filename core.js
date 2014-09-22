@@ -11,48 +11,50 @@ var protofns = Map();
 
 var Seq = defprotocol("Seq", {
   first: {
-    doc: "Returns the first item in the collection or nil",
+    doc: "Returns the first item in the collection or the nil coll",
     args: ['coll']
   },
   rest: {
-    doc: "Returns the rest of the collection or nil",
+    doc: "Returns the rest of the collection or an empty coll",
     args: ['coll']
   },
   cons: {
-    doc: "Prepends the item to the collection or seeds a new collection if coll is nil",
-    args: ['coll', 'item']
+    doc: "Constructs a new collection with x as the first element and coll as the rest",
+    args: ['coll', 'x']
   }
 });
 
-function NIL(type) {
+function nil(type) {
+  // represents nothingness, not there (next element of an empty list)
+  // currently used to maintain proper dispatch for protocols,
+  // impls can use nil instances as non-existent instance of their Type
   this.type = type;
 }
-NIL.prototype.toString = function() { return "nil"; };
-function isNil(x) {
-  return x instanceof NIL;
-}
-var nil = new NIL(NIL);
+nil.prototype.toString = function() { return "nil"; };
+function isNil(x) { return x instanceof nil || x === nil; };
 
+var nilArr = new nil(Array);
 extend(Array, "Seq", {
-  first: function(coll) { return coll.length ? coll[0] : new NIL(Array); },
-  rest: function(coll) { return coll.slice(1).length ? coll.slice(1) : new NIL(Array); },
+  first: function(coll) { return coll.length ? coll[0] : nilArr; },
+  rest: function(coll) { return isNil(coll) ? [] : coll.slice(1); },
   cons: function(coll, el) { return isNil(coll) ? [el] : [el].concat(coll); }
 });
 
+var nilVec = new nil(Vec);
 extend(Vec, "Seq", {
-  first: function(coll) { return coll.length ? coll.first() : new NIL(Vec); },
-  rest: function(coll) { return coll.rest().length ? coll.rest().toVector() : new NIL(Vec); },
+  first: function(coll) { return coll.length ? coll.first() : nilVec; },
+  rest: function(coll) { return isNil(coll) ? Vec() : coll.rest().toVector(); },
   cons: function(coll, el) { return isNil(coll) ? Vec(el) : Vec(el).concat(coll).toVector(); }
 });
 
 function map(fn, coll) {
   // Map a function over a collection.
   // Requires the collection implement the 'Seq' protocol
-  switch(arguments.length) {
+  switch (arguments.length) {
     case 1: // transducer
 	return function(f1) {
 	  return function(result, input) {
-	    switch(arguments.length) {
+	    switch (arguments.length) {
 	      case 0: return f1();
 	      case 1: return f1(result);
 	      case 2: return f1(result, fn(input));
@@ -61,11 +63,12 @@ function map(fn, coll) {
 	  };
 	};
     case 2: // regular coll map
-	if (isNil(coll)) return coll;
-	return Seq.cons(map(fn, Seq.rest(coll)), fn(Seq.first(coll)));
 	// TODO: return a lazy sequence instead of eager cons
-    default:
-	return void 0;
+	var head = Seq.first(coll),
+	    tail = Seq.rest(coll);
+	if (isNil(head)) return head;
+	return Seq.cons(map(fn, tail), fn(head));
+    default: return nil;
   }
 }
 
@@ -75,7 +78,7 @@ function getprotocol(protocol) {
 
 function doseq(seq, fn) {
   // sequential traversal of an iterator
-   for (var step = seq.next(); ! step.done; step = seq.next()) {
+  for (var step = seq.next(); ! step.done; step = seq.next()) {
     fn.call(null, step.value);
   }
 }
@@ -84,20 +87,17 @@ function defprotocol(protocol, methods) {
   function valid(methods) {
     valid = true;
     valid = valid && methods.length > 0;
-    var iter = methods.values();
-    for (var i = 0; i < methods.length; i++) {
-      var signature = Map(iter.next().value);
-      var keyset = signature.keySeq().toSet();
+    doseq(methods.values(), function(val) {
+      var keyset = Map(val).keySeq().toSet();
       valid = valid && equals(keyset, Set('doc', 'args'));
-    }
+    });
     return valid;
   }
   function genfn(protocol, key) {
     var fnName = protocol + "#" + key;
-    var fn = function() {
+    var fn = function(instance) {
       var args = Array.prototype.slice.call(arguments, 0);
-      var instance = args[0];
-      var name = getName(instance);
+      var name = getDispatchName(instance);
       try {
 	var impl = protofns.get(protocols.get(protocol)).get(name).get(key);
       } catch (e) {
@@ -108,11 +108,10 @@ function defprotocol(protocol, methods) {
     fn.name = fnName;
     return fn;
   }
-
   methods = Map(methods);
   if (valid(methods)) {
     var method = {};
-    method["::meta"] = methods;
+    method["::def"] = methods;
     doseq(methods.keys(), function(key) {
       method[key] = genfn(protocol, key);
     });
@@ -122,38 +121,13 @@ function defprotocol(protocol, methods) {
   }
 }
 
-function getName(x) {
+function getDispatchName(x) {
   var name = x.constructor.name;
-  if (name === "NIL") {
-    name = x.type.name;
-  }
-  return name;
+  return (name === "nil") ? x.type.name : name;
 }
 
 function extend(type, protocol, fns) {
-  /*
-   Extend a particular constructor with the implementation
-   of a particular protocol. e.g.
-
-   var Countable = defprotocol('Countable', {
-     size: {
-       doc: "returns the count of x",
-       args: [ 'x' ]
-     }
-   });
-
-   extend(Array, Countable, {
-     size: function(x) { return x.length; }
-   });
-
-   extend(Object, Countable, {
-     size: function(x) { return Object.keys(x).length; }
-   });
-
-   Countable.size([1,2,3]) === 3;
-   Countable.size({a:1, b:2}) === 2;
-   */
-  var name = getName(new type()),
+  var name = getDispatchName(new type),
       key = protocols.get(protocol);
   if (key) {
     var impls = protofns.get(key);
@@ -163,13 +137,10 @@ function extend(type, protocol, fns) {
 }
 
 function satisfies(protocol, x) {
-  var name = getName(x);
+  // Returns true if x satisfies a given protocol
+  var name = getDispatchName(x);
   var impls = protofns.get(protocols.get(protocol));
-  if (impls) {
-    return !! impls.get(name);
-  } else {
-    return false;
-  }
+  return !! (impls && impls.get(name));
 }
 
 var module = module || {};
@@ -177,11 +148,18 @@ var module = module || {};
 module.exports = {
   equals: Immutable.is,
 
+  first: Seq.first,
+  rest: Seq.rest,
+  cons: Seq.cons,
+
+  nil: nil,
+  isNil: isNil,
+
   // iter / xform 
   doseq: doseq,
   map: map,
 
-  // data structurs
+  // data structures
   Map: Immutable.Map,
   Vec: Immutable.Vector,
 
