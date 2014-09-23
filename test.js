@@ -7,14 +7,13 @@ ishtar.exports(global);
 describe('map', function() {
   it('works on arrays', function() {
     var mapped = map(function(x) { return x + 1; }, [1,2,3]);
+    doall(mapped).should.eql([2,3,4]);
     first(mapped).should.eql(2);
   });
-  /*
   it('works on Vectors', function() {
     var mapped = map(function(x) { return x + 1; }, Vec(1,2,3));
-    equals(mapped, Vec(2,3,4)).should.be.true;
+    equals(doall(mapped), Vec(2,3,4)).should.be.true;
   });
-  */
 });
 
 describe('protocols', function(){

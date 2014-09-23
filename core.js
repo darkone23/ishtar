@@ -142,6 +142,11 @@ function map(fn, coll) {
   }
 }
 
+function doall(seq) {
+  if (Seq.seq(seq) === nil) return seq;
+  return Seq.cons(doall(Seq.rest(seq)), Seq.first(seq));
+}
+
 function getprotocol(protocol) {
   return protocols.get(protocol);
 }
@@ -225,6 +230,7 @@ module.exports = {
 
   // iter / xform 
   doseq: doseq,
+  doall: doall,
   map: map,
 
   // data structures
