@@ -28,24 +28,24 @@ var Seq = defprotocol("Seq", {
   }
 });
 
+var Pending = defprotocol("Pending", {
+  realized: {
+    doc: "Returns true if a value is no longer pending.",
+    args: ['x']
+  }
+});
+
+var seq = Seq.seq,
+    first = Seq.first,
+    rest = Seq.rest,
+    cons = Seq.cons;
+
+var realized = Pending.realized;
+
 // represents nothingness, not there (next element of an empty list)
 function NIL() {};
-NIL.prototype.toString = function() { return "nil"; };
+NIL.prototype.toString = function toString() { return "nil"; };
 var nil = new NIL();
-
-extend(Array, "Seq", {
-  seq: function(coll) { return coll.length ? coll : nil; },
-  first: function(coll) { return coll.length ? coll[0] : nil; },
-  rest: function(coll) { return coll.slice(1); },
-  cons: function(coll, el) { return [el].concat(coll); }
-});
-
-extend(Vec, "Seq", {
-  seq: function(coll) { return coll.length ? coll : nil; },
-  first: function(coll) { return coll.length ? coll.first() : nil; },
-  rest: function(coll) { return coll.rest().toVector(); },
-  cons: function(coll, el) { return Vec(el).concat(coll).toVector(); }
-});
 
 function Cons(el, coll) {
   if (!(this instanceof $Cons)) {
@@ -55,13 +55,6 @@ function Cons(el, coll) {
   this.coll = coll;
 }
 var $Cons = Cons;
-
-extend(Cons, "Seq", {
-  seq: function(coll) { return coll; },
-  first: function(coll) { return coll.el; },
-  rest: function(coll) { return coll.coll; },
-  cons: function(coll, el) { return Cons(el, coll); }
-});
 
 function LazySeq(fn) {
   if (!(this instanceof $LazySeq)) {
@@ -83,6 +76,27 @@ LazySeq.prototype.getCachedVal = function() {
   return this.seq;
 }
 
+extend(Array, "Seq", {
+  seq: function(coll) { return coll.length ? coll : nil; },
+  first: function(coll) { return coll.length ? coll[0] : nil; },
+  rest: function(coll) { return coll.slice(1); },
+  cons: function(coll, el) { return [el].concat(coll); }
+});
+
+extend(Vec, "Seq", {
+  seq: function(coll) { return coll.length ? coll : nil; },
+  first: function(coll) { return coll.length ? coll.first() : nil; },
+  rest: function(coll) { return coll.rest().toVector(); },
+  cons: function(coll, el) { return Vec(el).concat(coll).toVector(); }
+});
+
+extend(Cons, "Seq", {
+  seq: function(coll) { return coll; },
+  first: function(coll) { return coll.el; },
+  rest: function(coll) { return coll.coll; },
+  cons: function(coll, el) { return Cons(el, coll); }
+});
+
 extend(LazySeq, "Seq", {
   seq: function(coll) {
     coll.getCachedVal();
@@ -92,26 +106,34 @@ extend(LazySeq, "Seq", {
       while(x instanceof $LazySeq) {
         x = x.getCachedVal();
       }
-      coll.seq = Seq.seq(x);
+      coll.seq = seq(x);
     }
     return coll.seq;
   },
   first: function(coll) { 
-    Seq.seq(coll);
+    seq(coll);
     if (coll.seq !== nil) {
-      return Seq.first(coll.seq);
+      return first(coll.seq);
     } else {
       return nil;
     }
   },
   rest: function(coll) { 
-    Seq.seq(coll);
-    return Seq.rest(coll.seq);
+    seq(coll);
+    return rest(coll.seq);
   },
   cons: function(coll, el) {
     return Cons(el, coll);
   }
 });
+
+extend(LazySeq, "Pending", {
+  realized: function(coll) { return coll.fn === nil; }
+});
+
+function second(coll) {
+  return first(rest(coll));
+}
 
 function map(fn, coll) {
   // Map a function over a collection.
@@ -129,22 +151,22 @@ function map(fn, coll) {
         };
       };
     case 2: // regular seqable
-      if (Seq.seq(coll) === nil) {
+      if (seq(coll) === nil) {
         return coll;
       } else {
         return LazySeq(function() {
-          var head = Seq.first(coll),
-              tail = Seq.rest(coll);
-          return Seq.cons(map(fn, tail), fn(head));
+          var head = first(coll),
+              tail = rest(coll);
+          return cons(map(fn, tail), fn(head));
         });
       }
     default: return nil;
   }
 }
 
-function doall(seq) {
-  if (Seq.seq(seq) === nil) return seq;
-  return Seq.cons(doall(Seq.rest(seq)), Seq.first(seq));
+function doall(coll) {
+  if (seq(coll) === nil) return coll;
+  return cons(doall(rest(coll)), first(coll));
 }
 
 function getprotocol(protocol) {
@@ -222,9 +244,14 @@ var module = module || {};
 module.exports = {
   equals: Immutable.is,
 
-  first: Seq.first,
-  rest: Seq.rest,
-  cons: Seq.cons,
+  realized: realized,
+
+  seq: seq,
+  first: first,
+  rest: rest,
+  cons: cons,
+
+  second: second,
 
   nil: nil,
 
@@ -234,6 +261,7 @@ module.exports = {
   map: map,
 
   // data structures
+  LazySeq: LazySeq,
   Map: Immutable.Map,
   Vec: Immutable.Vector,
 
