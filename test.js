@@ -6,7 +6,7 @@ ishtar.exports(global);
 
 describe('LazySeq', function() {
   describe('pending', function() {
-    var lazy = map(function(x) { return x }, [1,2,3]);
+    var lazy = map(function(x) { return x; }, [1,2,3]);
     realized(lazy).should.be.false;
     first(lazy);
     realized(lazy).should.be.true;
@@ -30,7 +30,7 @@ describe('map', function() {
 
 describe('protocols', function(){
 
-  var Seq = defprotocol('seq', {
+  var Seq = defprotocol({
     head: {
       doc: "return the first item of a sequence",
       args: [ 'coll' ]
@@ -41,23 +41,21 @@ describe('protocols', function(){
     }
   });
 
-  describe('#defprotocol() #getprotocol()', function(){
+  describe('#defprotocol()', function(){
     it('can store and retrieve protocols', function(){
-      getprotocol('seq').should.equal(Seq);
       (Seq).should.exist;
       (Seq).should.have.properties('head', 'tail');
-      should.not.exist(getprotocol('bzzt'));
     });
     it('only stores valid protocols', function() {
       should.not.exist(defprotocol('xxx'));
-      should.not.exist(getprotocol('xxx'));
+      should.not.exist(defprotocol({}));
     });
   });
 
   describe('#extend() #satisfies()', function() {
     it("extends a protocol", function() {
-      satisfies('seq', Vec()).should.be.false;
-      extend(Vec, 'seq', {
+      satisfies(Seq, Vec()).should.be.false;
+      extend(Vec, Seq, {
 	    head: function(coll) {
 	      return coll.first();
 	    },
@@ -65,7 +63,7 @@ describe('protocols', function(){
 	      return coll.shift();
 	    }
       });
-      satisfies('seq', Vec()).should.be.true;
+      satisfies(Seq, Vec()).should.be.true;
       var list = Vec(1,2,3),
           hd = Seq.head(list),
 	  tl = Seq.tail(list);
@@ -73,8 +71,8 @@ describe('protocols', function(){
       equals(tl, Vec(2,3)).should.be.true;
     });
     it("throws for things that do not implement the protocol", function() {
-      (function() { Seq.head([1,2,3]) }).should.throw();
-      extend(Array, 'seq', {
+      (function() { Seq.head([1,2,3]); }).should.throw();
+      extend(Array, Seq, {
 	head: function(x) { return x[0]; },
 	tail: function(x) { return x.slice(1); }
       });
