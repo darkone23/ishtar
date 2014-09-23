@@ -18,17 +18,29 @@ var collections = require("./lib/collections"),
 
 var protocols = require("./lib/protocols"),
     ISeq = protocols.ISeq,
-    IPending = protocols.IPending;
+    IPending = protocols.IPending,
+    ICollection = protocols.ICollection;
 
 var seq = ISeq.seq,
     first = ISeq.first,
     rest = ISeq.rest,
     cons = ISeq.cons;
 
+var count = ICollection.count,
+    empty = ICollection.empty;
+
 var realized = IPending.realized;
 
 function second(coll) {
   return first(rest(coll));
+}
+
+function take(n, coll) {
+  if (n > 0 && seq(coll) !== nil) {
+    return cons(take(n - 1, rest(coll)), first(coll));
+  } else {
+    return empty(coll);
+  }
 }
 
 function map(fn, coll) {
@@ -65,6 +77,13 @@ function doall(coll) {
   return cons(doall(rest(coll)), first(coll));
 }
 
+function iterate(fn, x) {
+  // lazy sequence generator
+  return cons(LazySeq(function() {
+    return iterate(fn, fn(x));
+  }), x);
+}
+
 var module = module || {};
 module.exports = {
   equals: Immutable.is,
@@ -76,6 +95,10 @@ module.exports = {
   rest: rest,
   cons: cons,
 
+  count: count,
+  empty: empty,
+
+  take: take,
   second: second,
 
   nil: nil,
@@ -83,6 +106,7 @@ module.exports = {
   // xform 
   doall: doall,
   map: map,
+  iterate: iterate,
 
   // data structures
   LazySeq: LazySeq,
