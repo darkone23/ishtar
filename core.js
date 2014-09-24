@@ -39,10 +39,19 @@ function second(coll) {
 
 function take(n, coll) {
   if (n > 0 && seq(coll) !== nil) {
-    return cons(first(coll), take(n - 1, rest(coll)));
+    var next = take(n-1, rest(coll));
+    return cons(first(coll), next);
   } else {
     return empty(coll);
   }
+}
+
+function drop(n, coll) {
+  while (n > 0 && seq(coll)) {
+    coll = rest(coll);
+    n -= 1;
+  }
+  return coll;
 }
 
 function takeWhile(pred, coll) {
@@ -83,7 +92,7 @@ function map(fn, coll) {
 }
 
 function doall(coll) {
-  if (seq(coll) === nil) return coll;
+  if (seq(coll) === nil) return empty(coll);
   return cons(first(coll), doall(rest(coll)));
 }
 
@@ -131,6 +140,7 @@ module.exports = {
 
   take: take,
   takeWhile: takeWhile,
+  drop: drop,
   second: second,
 
   nil: nil,

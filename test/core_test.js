@@ -50,6 +50,13 @@ describe('takeWhile', function() {
   });
 });
 
+describe('drop', function() {
+  it('drops from seqs', function() {
+    drop(3, [0,1,2,3,4,5]).should.eql([3,4,5]);
+    drop(10, [0,1,2,3,4,5]).should.eql([]);
+  });
+});
+
 describe('range', function() {
   it('returns a lazy range of numbers', function() {
     var threes = range(0, 100, 3);
