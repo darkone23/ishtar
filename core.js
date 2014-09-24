@@ -13,6 +13,7 @@ var proto = require("./lib/proto"),
 
 var collections = require("./lib/collections"),
     Map = collections.Map,
+    MapEntry = collections.MapEntry,
     Vec = collections.Vec,
     Set = collections.Set,
     LazySeq = collections.LazySeq;
@@ -143,6 +144,7 @@ module.exports = {
   // data structures
   LazySeq: LazySeq,
   Map: Immutable.Map,
+  MapEntry: MapEntry,
   Vec: Immutable.Vector,
 
   // protocols

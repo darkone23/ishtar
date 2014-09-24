@@ -15,8 +15,7 @@ describe('map', function() {
   it('works on objects', function() {
     var obj = {a: 1, b: 2, c: 3};
     var mapped = map(function(x) {
-      var key = x[0], val = x[1];
-      return [key, val + 1];
+      return MapEntry(x.key, x.val+1);
     }, obj);
     doall(mapped).should.eql({a:2, b:3, c:4});
     obj.should.eql({a:1, b:2, c:3});
@@ -25,6 +24,14 @@ describe('map', function() {
   it('works on Vectors', function() {
     var mapped = map(function(x) { return x + 1; }, Vec(1,2,3));
     equals(doall(mapped), Vec(2,3,4)).should.be.true;
+  });
+
+  it('works on Maps', function() {
+    var mapped = map(function(entry) {
+      var key = entry.key, val = entry.val;
+      return MapEntry(key, val + 1);
+    }, Map({a: 1, b: 2, c: 3}));
+    equals(doall(mapped), Map({a: 2, b: 3, c: 4}));
   });
 
 });
