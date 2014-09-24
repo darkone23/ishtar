@@ -23,6 +23,20 @@ describe('take', function() {
   });
 });
 
+describe('takeWhile', function() {
+  it('takes given a predicate function', function() {
+    var nums = [1,1,2,3,4];
+    takeWhile(function(n) { return n < 3; }, nums).should.eql([1,1,2]);
+  });
+});
+
+describe('range', function() {
+  it('returns a lazy range of numbers', function() {
+    var threes = range(0, 100, 3);
+    equals(take(5, threes), Vec(0, 3, 6, 9, 12)).should.be.true;
+  });
+});
+
 describe('iterate', function() {
   it('generates lazy sequences', function() {
     var seed = [0,1];

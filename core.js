@@ -44,29 +44,37 @@ function take(n, coll) {
   }
 }
 
+function takeWhile(pred, coll) {
+  if(seq(coll) !== nil) {
+    var next = first(coll);
+    if (pred(next)) return cons(next, takeWhile(pred, rest(coll)));
+  }
+  return empty(coll);
+}
+
+function mapping(fn) {
+  return function(step) {
+    return function(result, input) {
+      switch (arguments.length) {
+	case 0: return step();
+	case 1: return step(result);
+	case 2: return step(result, fn(input));
+	default: return nil;
+      };
+    };
+  };
+}
+
 function map(fn, coll) {
   // Map a function over a collection.
-  // Requires the collection implement the 'Seq' protocol
   switch (arguments.length) {
-    case 1: // transducer
-      return function(step) {
-        return function(result, input) {
-          switch (arguments.length) {
-            case 0: return step();
-            case 1: return step(result);
-            case 2: return step(result, fn(input));
-            default: return nil;
-          };
-        };
-      };
-    case 2: // regular seqable
-      if (seq(coll) === nil) {
-        return coll;
+    case 1: return mapping(fn);
+    case 2:
+      if (seq(coll) === nil) { 
+	return coll;
       } else {
         return LazySeq(function() {
-          var head = first(coll),
-              tail = rest(coll);
-          return cons(fn(head), map(fn, tail));
+          return cons(fn(first(coll)), map(fn, rest(coll)));
         });
       }
     default: return nil;
@@ -85,6 +93,27 @@ function iterate(fn, x) {
   }));
 }
 
+function range(start, end, step) {
+  // returns a lazy, possibly infinite range of numbers
+  switch (arguments.length) {
+    case 0: return range(0, Infinity, 1);
+    case 1: return range(0, start, 1);
+    case 2: return range(start, end, 1);
+    case 3:
+      var compare;
+      if (step === 0 || start === end) compare = function(x, end) { return x !== end; };
+      if (step > 0) compare = function(x, end) { return x < end; };
+      if (step < 0) compare = function(x, end) { return x > end; };
+      if (compare(start, end)) {
+	return cons(start, LazySeq(function() {
+	  return range(start + step, end, step);
+	}));
+      } else {
+	return Vec();
+      }
+  }
+}
+
 var module = module || {};
 module.exports = {
   equals: Immutable.is,
@@ -100,6 +129,7 @@ module.exports = {
   empty: empty,
 
   take: take,
+  takeWhile: takeWhile,
   second: second,
 
   nil: nil,
@@ -108,6 +138,7 @@ module.exports = {
   doall: doall,
   map: map,
   iterate: iterate,
+  range: range,
 
   // data structures
   LazySeq: LazySeq,
