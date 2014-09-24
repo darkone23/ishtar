@@ -5,15 +5,28 @@ var ishtar = require("../core");
 ishtar.exports(global);
 
 describe('map', function() {
+
   it('works on arrays', function() {
     var mapped = map(function(x) { return x + 1; }, [1,2,3]);
     doall(mapped).should.eql([2,3,4]);
     first(mapped).should.eql(2);
   });
+
+  it('works on objects', function() {
+    var obj = {a: 1, b: 2, c: 3};
+    var mapped = map(function(x) {
+      var key = x[0], val = x[1];
+      return [key, val + 1];
+    }, obj);
+    doall(mapped).should.eql({a:2, b:3, c:4});
+    obj.should.eql({a:1, b:2, c:3});
+  });
+
   it('works on Vectors', function() {
     var mapped = map(function(x) { return x + 1; }, Vec(1,2,3));
     equals(doall(mapped), Vec(2,3,4)).should.be.true;
   });
+
 });
 
 describe('take', function() {
