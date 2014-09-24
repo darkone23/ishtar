@@ -54,11 +54,11 @@ describe('protocols', function(){
   var Seq = defprotocol({
     head: {
       doc: "return the first item of a sequence",
-      args: [ 'coll' ]
+      args: [ self ]
     },
     tail: {
       doc: "return everything but the first item of a sequence",
-      args: [ 'coll' ]
+      args: [ self ]
     }
   });
 

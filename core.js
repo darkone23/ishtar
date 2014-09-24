@@ -7,6 +7,7 @@ var nil = require("./lib/nil");
 
 var proto = require("./lib/proto"),
     defprotocol = proto.defprotocol,
+    self = proto.self,
     extend = proto.extend,
     satisfies = proto.satisfies;
 
@@ -37,7 +38,7 @@ function second(coll) {
 
 function take(n, coll) {
   if (n > 0 && seq(coll) !== nil) {
-    return cons(take(n - 1, rest(coll)), first(coll));
+    return cons(first(coll), take(n - 1, rest(coll)));
   } else {
     return empty(coll);
   }
@@ -65,7 +66,7 @@ function map(fn, coll) {
         return LazySeq(function() {
           var head = first(coll),
               tail = rest(coll);
-          return cons(map(fn, tail), fn(head));
+          return cons(fn(head), map(fn, tail));
         });
       }
     default: return nil;
@@ -74,14 +75,14 @@ function map(fn, coll) {
 
 function doall(coll) {
   if (seq(coll) === nil) return coll;
-  return cons(doall(rest(coll)), first(coll));
+  return cons(first(coll), doall(rest(coll)));
 }
 
 function iterate(fn, x) {
   // lazy sequence generator
-  return cons(LazySeq(function() {
+  return cons(x, LazySeq(function() {
     return iterate(fn, fn(x));
-  }), x);
+  }));
 }
 
 var module = module || {};
@@ -115,6 +116,7 @@ module.exports = {
 
   // protocols
   defprotocol: defprotocol,
+  self: self,
   extend: extend,
   satisfies: satisfies,
 
