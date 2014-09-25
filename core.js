@@ -45,6 +45,14 @@ function second(coll) {
   return first(rest(coll));
 }
 
+function doseq(coll, fn) {
+  while (seq(coll) !== nil) {
+    fn.call(null, first(coll));
+    coll = rest(coll);
+  }
+  return nil;
+}
+
 function take(n, coll) {
   if (n > 0 && seq(coll) !== nil) {
     var next = take(n-1, rest(coll));
@@ -158,6 +166,7 @@ module.exports = {
 
   // xform 
   doall: doall,
+  doseq: doseq,
   map: map,
   iterate: iterate,
   range: range,

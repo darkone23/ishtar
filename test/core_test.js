@@ -36,6 +36,15 @@ describe('map', function() {
 
 });
 
+describe('doseq', function() {
+  it('sequentially invokes fn', function() {
+     var x = 0;
+     doseq(range(10), function(n) { x += n; })
+     x.should.equal(45);
+  });
+});
+
+
 describe('take', function() {
   it('takes from seqs', function() {
     take(3, [0,1,2,3,4,5]).should.eql([0,1,2]);
