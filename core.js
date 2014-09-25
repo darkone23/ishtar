@@ -33,6 +33,14 @@ var count = ICollection.count,
 
 var realized = IPending.realized;
 
+function inc(x) {
+  return x + 1;
+}
+
+function dec(x) {
+  return x - 1;
+}
+
 function second(coll) {
   return first(rest(coll));
 }
@@ -119,7 +127,7 @@ function range(start, end, step) {
 	  return range(start + step, end, step);
 	}));
       } else {
-	return Vec();
+	return nil;
       }
   }
 }
@@ -134,6 +142,9 @@ module.exports = {
   first: first,
   rest: rest,
   cons: cons,
+
+  inc: inc,
+  dec: dec,
 
   count: count,
   empty: empty,
