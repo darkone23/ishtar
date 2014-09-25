@@ -16,6 +16,15 @@ var lend = new Date();
 console.log("lodash:", lend - lstart + "ms");
 
 /* =============================
+I M M U T A B L E ==============
+============================= */
+var Immutable = require("immutable");
+var imstart = new Date();
+Immutable.Vector.from(Immutable.Range(0, 100001)).map(function(x) { return x - 1; }).skip(100000).first();
+var imend = new Date();
+console.log("immutable-js:", (imend - imstart) + "ms");
+
+/* =============================
 I S H T A R ====================
 ============================= */
 var ishtar = require("../core");
