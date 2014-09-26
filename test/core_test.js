@@ -51,6 +51,29 @@ describe('doseq', function() {
   });
 });
 
+describe('reduce', function() {
+  it('reduces sequences', function() {
+     // no initial value
+     var x = reduce(function(x, y) { return x+y; }, range(10));
+     x.should.equal(45);
+
+     // empty sequence
+     var y = reduce(function() { return 23; }, []);
+     y.should.equal(23);
+
+     // sequence of only one item (already reduced)
+     var z = reduce(null, [1]);
+     z.should.equal(1);
+
+     // initial value and sequence
+     var reduced = reduce(function(x, y) { return x+y; }, -45, range(10));
+     reduced.should.equal(0);
+
+     // initial value and empty sequence
+     var init = reduce(null, 42, {});
+     init.should.equal(42);
+  })
+});
 
 describe('take', function() {
   it('takes from seqs', function() {

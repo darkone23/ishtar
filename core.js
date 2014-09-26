@@ -45,8 +45,16 @@ function second(coll) {
   return first(rest(coll));
 }
 
+function isEmpty(coll) {
+  return seq(coll) === nil;
+}
+
+function seqable(coll) {
+  return seq(coll) !== nil;
+}
+
 function doseq(coll, fn) {
-  while (seq(coll) !== nil) {
+  while (seqable(coll)) {
     fn.call(null, first(coll));
     coll = rest(coll);
   }
@@ -54,16 +62,15 @@ function doseq(coll, fn) {
 }
 
 function take(n, coll) {
-  if (n > 0 && seq(coll) !== nil) {
-    var next = take(n-1, rest(coll));
-    return cons(first(coll), next);
+  if (n > 0 && seqable(coll)) {
+    return cons(first(coll), take(n-1, rest(coll)));
   } else {
     return empty(coll);
   }
 }
 
 function drop(n, coll) {
-  while (n > 0 && seq(coll)) {
+  while (n > 0 && seqable(coll)) {
     coll = rest(coll);
     n -= 1;
   }
@@ -71,7 +78,7 @@ function drop(n, coll) {
 }
 
 function takeWhile(pred, coll) {
-  if(seq(coll) !== nil) {
+  if(seqable(coll)) {
     var next = first(coll);
     if (pred(next)) return cons(next, takeWhile(pred, rest(coll)));
   }
@@ -96,7 +103,7 @@ function map(fn, coll) {
   switch (arguments.length) {
     case 1: return mapping(fn);
     case 2:
-      if (seq(coll) === nil) { 
+      if (isEmpty(coll)) { 
 	return coll;
       } else {
         return LazySeq(function() {
@@ -107,8 +114,33 @@ function map(fn, coll) {
   }
 }
 
+function reduce(fn /* coll || init, coll */) {
+  // reduces sequences
+  switch (arguments.length) {
+    case 2:
+      var coll = arguments[1]; 
+      if (seqable(coll)) {
+        return reduce(fn, first(coll), rest(coll));
+      } else {
+        return fn();
+      }
+    case 3:
+      var init = arguments[1], coll = arguments[2];
+      if (seqable(coll)) {
+        var result = init;
+        doseq(coll, function(x) {
+          result = fn(result, x);
+        });
+        return result;
+      } else {
+        return init;
+      }
+    default: return nil;
+  }
+}
+
 function doall(coll) {
-  if (seq(coll) === nil) return empty(coll);
+  if (isEmpty(coll)) return coll;
   return cons(first(coll), doall(rest(coll)));
 }
 
@@ -168,6 +200,7 @@ module.exports = {
   doall: doall,
   doseq: doseq,
   map: map,
+  reduce: reduce,
   iterate: iterate,
   range: range,
 
