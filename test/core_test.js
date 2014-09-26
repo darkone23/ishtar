@@ -37,9 +37,9 @@ describe('map', function() {
   it('works on Sets', function() {
     var set = Set.from([1, 2, 3]),
         mapped = map(function(entry) {
-          return entry * 2;
+          return entry * entry;
         }, set);
-    equals(doall(mapped), Set([2, 3, 4]));
+    equals(doall(mapped), Set(1, 4, 9)).should.be.true;
   });
 });
 
