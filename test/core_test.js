@@ -77,6 +77,7 @@ describe('reduce', function() {
 
 describe('take', function() {
   it('takes from seqs', function() {
+    take(0, range()).should.eql(Vec());;
     take(3, [0,1,2,3,4,5]).should.eql([0,1,2]);
     take(10, [0,1,2,3,4,5]).should.eql([0,1,2,3,4,5]);
   });
