@@ -176,6 +176,7 @@ module.exports = {
   Map: Immutable.Map,
   MapEntry: MapEntry,
   Vec: Immutable.Vector,
+  Set: Immutable.Set,
 
   // protocols
   defprotocol: defprotocol,

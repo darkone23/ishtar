@@ -34,6 +34,13 @@ describe('map', function() {
     equals(doall(mapped), Map({a: 2, b: 3, c: 4}));
   });
 
+  it('works on Sets', function() {
+    var set = Set.from([1, 2, 3]),
+        mapped = map(function(entry) {
+          return entry * 2;
+        }, set);
+    equals(doall(mapped), Set([2, 3, 4]));
+  });
 });
 
 describe('doseq', function() {
