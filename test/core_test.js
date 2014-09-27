@@ -15,21 +15,21 @@ describe('map', function() {
   it('works on objects', function() {
     var obj = {a: 1, b: 2, c: 3};
     var mapped = map(function(x) {
-      return MapEntry(x.key, x.val+1);
+      return [ x[0], x[1] + 1 ];
     }, obj);
     doall(mapped).should.eql({a:2, b:3, c:4});
     obj.should.eql({a:1, b:2, c:3});
   });
 
   it('works on Vectors', function() {
-    var mapped = map(function(x) { return x + 1; }, Vec(1,2,3));
-    equals(doall(mapped), Vec(2,3,4)).should.be.true;
+    var mapped = map(function(x) { return x + 1; }, Vector(1,2,3));
+    equals(doall(mapped), Vector(2,3,4)).should.be.true;
   });
 
   it('works on Maps', function() {
     var mapped = map(function(entry) {
-      var key = entry.key, val = entry.val;
-      return MapEntry(key, val + 1);
+      var key = entry[0], val = entry[1];
+      return [ key, val + 1 ];
     }, Map({a: 1, b: 2, c: 3}));
     equals(doall(mapped), Map({a: 2, b: 3, c: 4}));
   });
@@ -99,7 +99,7 @@ describe('reduce', function() {
 
 describe('take', function() {
   it('takes from seqs', function() {
-    take(0, range()).should.eql(Vec());;
+    take(0, range()).should.eql(Vector());;
     take(3, [0,1,2,3,4,5]).should.eql([0,1,2]);
     take(10, [0,1,2,3,4,5]).should.eql([0,1,2,3,4,5]);
   });
@@ -138,7 +138,7 @@ describe('dropWhile', function() {
 describe('range', function() {
   it('returns a lazy range of numbers', function() {
     var threes = range(0, 100, 3);
-    equals(take(5, threes), Vec(0, 3, 6, 9, 12)).should.be.true;
+    equals(take(5, threes), Vector(0, 3, 6, 9, 12)).should.be.true;
   });
 });
 
@@ -151,7 +151,7 @@ describe('iterate', function() {
     };
     var fibs = map(first, iterate(step, seed));
     count(take(10, fibs)).should.equal(10);
-    equals(take(10, fibs), Vec(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)).should.be.true;
+    equals(take(10, fibs), Vector(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)).should.be.true;
   });
 });
 
@@ -159,13 +159,13 @@ describe('transduce', function() {
   describe('map transducer', function() {
     it('works as a transducer', function() {
       var inc = map(function(x) { return x+1; });
-      var mapped = transduce(inc, conj, Vec(), Vec(1,2,3));
-      equals(doall(mapped), Vec(2,3,4)).should.be.true;
+      var mapped = transduce(inc, conj, Vector(), Vector(1,2,3));
+      equals(doall(mapped), Vector(2,3,4)).should.be.true;
     });
     it('works without an initial value', function() {
       var inc = map(function(x) { return x+1; });
-      var mapped = transduce(inc, conj, Vec(1,2,3));
-      equals(doall(mapped), Vec(2,3,4)).should.be.true;
+      var mapped = transduce(inc, conj, Vector(1,2,3));
+      equals(doall(mapped), Vector(2,3,4)).should.be.true;
     });
   });
 });
@@ -184,7 +184,7 @@ describe('mapcat', function() {
 	return step(x, y);
       };
     };
-    var pair = function(x) { return Vec(x, x); };
+    var pair = function(x) { return Vector(x, x); };
     var square = function(x) { return x * x; };
     var xform = compose(
       ensureLaziness,
@@ -193,7 +193,7 @@ describe('mapcat', function() {
       drop(expected - 1),
       take(expected)
     );
-    equals(transduce(xform, conj, range()), Vec(1,4,4,9)).should.be.true;
+    equals(transduce(xform, conj, range()), Vector(1,4,4,9)).should.be.true;
   });
 });
 

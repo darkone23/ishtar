@@ -13,8 +13,7 @@ var proto = require("./lib/proto"),
 
 var collections = require("./lib/collections"),
     Map = collections.Map,
-    MapEntry = collections.MapEntry,
-    Vec = collections.Vec,
+    Vector = collections.Vector,
     Set = collections.Set,
     Reduced = collections.Reduced,
     LazySeq = collections.LazySeq;
@@ -270,7 +269,7 @@ function transduce(xform, step, init, coll) {
 function transconj() {
    // conj with transducer arity
    switch (arguments.length) {
-     case 0: return Vec();
+     case 0: return Vector();
      default:
        return conj.apply(null, arguments);
    };
@@ -355,8 +354,7 @@ module.exports = {
   Reduced: Reduced,
   LazySeq: LazySeq,
   Map: Immutable.Map,
-  MapEntry: MapEntry,
-  Vec: Immutable.Vector,
+  Vector: Immutable.Vector,
   Set: Immutable.Set,
 
   // protocols

@@ -30,8 +30,8 @@ describe('protocols', function(){
 
   describe('#extend() #satisfies()', function() {
     it("extends a protocol", function() {
-      satisfies(Seq, Vec()).should.be.false;
-      extend(Vec, Seq, {
+      satisfies(Seq, Vector()).should.be.false;
+      extend(Vector, Seq, {
 	    head: function(coll) {
 	      return coll.first();
 	    },
@@ -39,12 +39,12 @@ describe('protocols', function(){
 	      return coll.shift();
 	    }
       });
-      satisfies(Seq, Vec()).should.be.true;
-      var list = Vec(1,2,3),
+      satisfies(Seq, Vector()).should.be.true;
+      var list = Vector(1,2,3),
           hd = Seq.head(list),
 	  tl = Seq.tail(list);
       hd.should.equal(1);
-      equals(tl, Vec(2,3)).should.be.true;
+      equals(tl, Vector(2,3)).should.be.true;
     });
     it("throws for things that do not implement the protocol", function() {
       (function() { Seq.head([1,2,3]); }).should.throw();
