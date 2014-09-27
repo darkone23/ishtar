@@ -16,12 +16,14 @@ var collections = require("./lib/collections"),
     MapEntry = collections.MapEntry,
     Vec = collections.Vec,
     Set = collections.Set,
+    Reduced = collections.Reduced,
     LazySeq = collections.LazySeq;
 
 var protocols = require("./lib/protocols"),
     ISeq = protocols.ISeq,
     IPending = protocols.IPending,
     IAppend = protocols.IAppend,
+    IWrap = protocols.IWrap,
     ICollection = protocols.ICollection;
 
 var seq = ISeq.seq,
@@ -33,6 +35,8 @@ var count = ICollection.count,
     empty = ICollection.empty;
 
 var conj = IAppend.conj;
+
+var unwrap = IWrap.unwrap;
 
 var realized = IPending.realized;
 
@@ -140,15 +144,24 @@ function reduce(fn /* coll || init, coll */) {
       var init = arguments[1], coll = arguments[2];
       if (seqable(coll)) {
         var result = init;
-        doseq(coll, function(x) {
-          result = fn(result, x);
-        });
+        while(seqable(coll)) {
+          result = fn(result, first(coll));
+          if (isReduced(result)) {
+            result = unwrap(result);
+            break;
+          }
+          coll = rest(coll);
+        }
         return result;
       } else {
         return init;
       }
     default: return nil;
   }
+}
+
+function isReduced(x) {
+  return (x instanceof Reduced);
 }
 
 function transduce(xform, step, init, coll) {
@@ -201,6 +214,9 @@ module.exports = {
 
   realized: realized,
 
+  unwrap: unwrap,
+  isReduced: isReduced,
+
   seq: seq,
   first: first,
   rest: rest,
@@ -232,6 +248,7 @@ module.exports = {
   transduce: transduce,
 
   // data structures
+  Reduced: Reduced,
   LazySeq: LazySeq,
   Map: Immutable.Map,
   MapEntry: MapEntry,

@@ -73,6 +73,12 @@ describe('reduce', function() {
      var init = reduce(null, 42, {});
      init.should.equal(42);
   })
+  it('is interruptable', function() {
+    var counter = 0;
+    var reducer = function() { return (counter++ == 3) ? Reduced("interrupt") : "continue"; }
+    reduce(reducer, 0, [1]).should.equal("continue");
+    reduce(reducer, range()).should.equal("interrupt");
+  });
 });
 
 describe('take', function() {
@@ -129,5 +135,16 @@ describe('transduce', function() {
       var mapped = transduce(inc, conj, Vec(1,2,3));
       equals(doall(mapped), Vec(2,3,4)).should.be.true;
     });
+  });
+});
+
+describe('Reduced', function () {
+  it('isReduced', function () {
+    var reduced = Reduced(3);
+    isReduced(reduced).should.be.true;
+  });
+  it('unwrap', function () {
+    var reduced = Reduced(3);
+    unwrap(reduced).should.equal(3);
   });
 });
