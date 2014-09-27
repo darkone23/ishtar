@@ -85,12 +85,30 @@ function take(n, coll) {
   }
 }
 
+function dropping(n) {
+  return function(step) {
+    var i = n;
+    return function(result, input) {
+      switch (arguments.length) {
+	case 0: return step();
+	case 1: return step(result);
+	case 2: return (n-- > 0) ? result : step(result, input);
+	default: return nil;
+      }
+    };
+  };
+}
+
 function drop(n, coll) {
-  while (n > 0 && seqable(coll)) {
-    coll = rest(coll);
-    n -= 1;
+  switch (arguments.length) {
+    case 1: return dropping(n);
+    case 2:
+      while (n > 0 && seqable(coll)) {
+	coll = rest(coll);
+	n -= 1;
+      }
+      return coll;
   }
-  return coll;
 }
 
 function takeWhile(pred, coll) {
@@ -143,7 +161,7 @@ function cat(step) {
           // will unwrap the reduced wrapper and break short circuiting
           var val = step(r, i);
           return isReduced(val) ? Reduced(val) : val;
-        }
+        };
         return reduce(reducer, result, input);
       default: return nil;
     };

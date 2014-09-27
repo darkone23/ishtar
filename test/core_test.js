@@ -88,10 +88,10 @@ describe('reduce', function() {
      // initial value and empty sequence
      var init = reduce(null, 42, {});
      init.should.equal(42);
-  })
+  });
   it('is interruptable', function() {
     var counter = 0;
-    var reducer = function() { return (counter++ == 3) ? Reduced("interrupt") : "continue"; }
+    var reducer = function() { return (counter++ == 3) ? Reduced("interrupt") : "continue"; };
     reduce(reducer, 0, [1]).should.equal("continue");
     reduce(reducer, range()).should.equal("interrupt");
   });
@@ -116,6 +116,9 @@ describe('drop', function() {
   it('drops from seqs', function() {
     drop(3, [0,1,2,3,4,5]).should.eql([3,4,5]);
     drop(10, [0,1,2,3,4,5]).should.eql([]);
+  });
+  it('works as a transducer', function() {
+    transduce(drop(2), conj, [], [1,2,3,4,5]).should.eql([3,4,5]);
   });
 });
 
