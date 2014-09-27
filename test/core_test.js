@@ -62,7 +62,7 @@ describe('compose', function() {
 describe('doseq', function() {
   it('sequentially invokes fn', function() {
      var x = 0;
-     doseq(range(10), function(n) { x += n; })
+     doseq(range(10), function(n) { x += n; });
      x.should.equal(45);
   });
 });
@@ -91,8 +91,8 @@ describe('reduce', function() {
   });
   it('is interruptable', function() {
     var counter = 0;
-    var reducer = function() { return (counter++ == 3) ? Reduced("interrupt") : "continue"; };
-    reduce(reducer, 0, [1]).should.equal("continue");
+    var reducer = function() { return (counter++ == 50) ? Reduced("interrupt") : "continue"; };
+    reduce(reducer, 0, range(10)).should.equal("continue");
     reduce(reducer, range()).should.equal("interrupt");
   });
 });
@@ -102,6 +102,9 @@ describe('take', function() {
     take(0, range()).should.eql(Vec());;
     take(3, [0,1,2,3,4,5]).should.eql([0,1,2]);
     take(10, [0,1,2,3,4,5]).should.eql([0,1,2,3,4,5]);
+  });
+  it('works as a transducer', function() {
+    transduce(take(3), conj, [], [1,2,3,4,5]).should.eql([1,2,3]);
   });
 });
 
@@ -162,6 +165,11 @@ describe('mapcat', function() {
     var duplicate = function(x) { return [ x, x ]; };
     var doubling = mapcat(duplicate);
     transduce(doubling, conj, [], [1,2,3]).should.eql([1,1,2,2,3,3]);;
+  });
+  it('can escape from infinite lists', function() {
+    var duplicate = function(x) { return Vec(x, x); };
+    var doubling = compose(mapcat(duplicate), take(3));
+    equals(transduce(doubling, conj, range()), Vec(0,0,1)).should.be.true;
   });
   // TODO: test mapcat allows escape when comp'd with other transducers (like take)
 });
