@@ -134,6 +134,17 @@ function drop(n, coll) {
   }
 }
 
+function dropWhile(pred, coll) {
+  if(seqable(coll)) {
+    var next = first(coll);
+    if (pred(next)) {
+      return dropWhile(pred, rest(coll));
+    }
+    return coll;
+  }
+  return empty(coll);
+}
+
 function takingWhile(pred) {
   return function (step) {
     return function (result, input) {
@@ -323,6 +334,7 @@ module.exports = {
   take: take,
   takeWhile: takeWhile,
   drop: drop,
+  dropWhile: dropWhile,
   second: second,
 
   nil: nil,

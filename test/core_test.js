@@ -129,6 +129,12 @@ describe('drop', function() {
   });
 });
 
+describe('dropWhile', function() {
+  it('drops while a predicate holds', function() {
+    dropWhile(function(n) { return n <= 5; }, [1,2,3,4,5,6,7,8,9]).should.eql([6,7,8,9]);
+  });
+});
+
 describe('range', function() {
   it('returns a lazy range of numbers', function() {
     var threes = range(0, 100, 3);
