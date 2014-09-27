@@ -138,6 +138,15 @@ describe('transduce', function() {
   });
 });
 
+describe('mapcat', function() {
+  it('transduces by reducing', function() {
+    var duplicate = function(x) { return [ x, x ]; };
+    var doubling = mapcat(duplicate);
+    transduce(doubling, conj, [], [1,2,3]).should.eql([1,1,2,2,3,3]);;
+  });
+  // TODO: test mapcat allows escape when comp'd with other transducers (like take)
+});
+
 describe('Reduced', function () {
   it('isReduced', function () {
     var reduced = Reduced(3);

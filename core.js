@@ -92,15 +92,6 @@ function takeWhile(pred, coll) {
   return empty(coll);
 }
 
-function transconj() {
-   // conj with transducer arity
-   switch (arguments.length) {
-     case 0: return Vec();
-     default:
-       return conj.apply(null, arguments);
-   };
-}
-
 function mapping(fn) {
   return function(step) {
     return function(result, input) {
@@ -119,29 +110,51 @@ function map(fn, coll) {
   switch (arguments.length) {
     case 1: return mapping(fn);
     case 2:
-      if (isEmpty(coll)) { 
-	return coll;
-      } else {
+      if (seqable(coll)) { 
         return LazySeq(function() {
           return cons(fn(first(coll)), map(fn, rest(coll)));
         });
+      } else {
+        return coll;
       }
     default: return nil;
   }
 }
 
-function reduce(fn /* coll || init, coll */) {
+function cat(step) {
+  // mapcat transducer
+  return function(result, input) {
+    switch (arguments.length) {
+      case 0: return step();
+      case 1: return step(result);
+      case 2:
+        var reducer = function(r, i) {
+          // it is possible for step to return a reduced val from a prior xform
+          // if we don't wrap this reduced val our call to reduce()
+          // will unwrap the reduced wrapper and break short circuiting
+          var val = step(r, i);
+          return isReduced(val) ? Reduced(val) : val;
+        }
+        return reduce(reducer, result, input);
+      default: return nil;
+    };
+  };
+};
+
+function mapcat(fn) {
+  var mapping = map(fn);
+  return function(step) {
+    return mapping(cat(step));
+  }
+}
+
+function reduce(fn, init, coll) {
   // reduces sequences
   switch (arguments.length) {
-    case 2:
-      var coll = arguments[1]; 
-      if (seqable(coll)) {
-        return reduce(fn, first(coll), rest(coll));
-      } else {
-        return fn();
-      }
+    case 2: // init not supplied, coll is second arg
+      coll = arguments[1]; 
+      return seqable(coll) ? reduce(fn, first(coll), rest(coll)) : fn();
     case 3:
-      var init = arguments[1], coll = arguments[2];
       if (seqable(coll)) {
         var result = init;
         while(seqable(coll)) {
@@ -153,9 +166,8 @@ function reduce(fn /* coll || init, coll */) {
           coll = rest(coll);
         }
         return result;
-      } else {
-        return init;
       }
+      return init;
     default: return nil;
   }
 }
@@ -173,6 +185,15 @@ function transduce(xform, step, init, coll) {
       return reduce(xform(step), init, coll);
     default: return nil;
   }
+}
+
+function transconj() {
+   // conj with transducer arity
+   switch (arguments.length) {
+     case 0: return Vec();
+     default:
+       return conj.apply(null, arguments);
+   };
 }
 
 function doall(coll) {
@@ -241,6 +262,7 @@ module.exports = {
   doall: doall,
   doseq: doseq,
   map: map,
+  mapcat: mapcat,
   reduce: reduce,
   iterate: iterate,
   range: range,
