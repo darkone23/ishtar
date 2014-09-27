@@ -32,8 +32,8 @@ I S H T A R ====================
 ============================= */
 var ishtar = require("../core");
 var istart = new Date();
-var xform = ishtar.compose(ishtar.drop(x), ishtar.map(ishtar.dec));
-ishtar.first(ishtar.transduce(xform, ishtar.conj, ishtar.range(0, x+1)));
+var xform = ishtar.compose(ishtar.drop(x), ishtar.map(ishtar.dec), ishtar.take(1));
+ishtar.first(ishtar.transduce(xform, ishtar.conj, ishtar.iterate(ishtar.inc, 0)));
 var iend = new Date();
 console.log("ishtar:", iend - istart + "ms");
 

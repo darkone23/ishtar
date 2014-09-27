@@ -355,6 +355,7 @@ module.exports = {
   LazySeq: LazySeq,
   Map: Immutable.Map,
   Vector: Immutable.Vector,
+  Range: Immutable.Range,
   Set: Immutable.Set,
 
   // protocols

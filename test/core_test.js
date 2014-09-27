@@ -21,9 +21,9 @@ describe('map', function() {
     obj.should.eql({a:1, b:2, c:3});
   });
 
-  it('works on Vectors', function() {
+  it('works on large Vectors', function() {
     var mapped = map(function(x) { return x + 1; }, Vector(1,2,3));
-    equals(doall(mapped), Vector(2,3,4)).should.be.true;
+    equals(doall(map(inc, Range(0, 100).toVector())), Range(1, 101));
   });
 
   it('works on Maps', function() {
