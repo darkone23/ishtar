@@ -116,3 +116,18 @@ describe('iterate', function() {
     equals(take(10, fibs), Vec(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)).should.be.true;
   });
 });
+
+describe('transduce', function() {
+  describe('map transducer', function() {
+    it('works as a transducer', function() {
+      var inc = map(function(x) { return x+1; });
+      var mapped = transduce(inc, conj, Vec(), Vec(1,2,3));
+      equals(doall(mapped), Vec(2,3,4)).should.be.true;
+    });
+    it('works without an initial value', function() {
+      var inc = map(function(x) { return x+1; });
+      var mapped = transduce(inc, conj, Vec(1,2,3));
+      equals(doall(mapped), Vec(2,3,4)).should.be.true;
+    });
+  });
+});

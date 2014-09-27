@@ -21,6 +21,7 @@ var collections = require("./lib/collections"),
 var protocols = require("./lib/protocols"),
     ISeq = protocols.ISeq,
     IPending = protocols.IPending,
+    IAppend = protocols.IAppend,
     ICollection = protocols.ICollection;
 
 var seq = ISeq.seq,
@@ -30,6 +31,8 @@ var seq = ISeq.seq,
 
 var count = ICollection.count,
     empty = ICollection.empty;
+
+var conj = IAppend.conj;
 
 var realized = IPending.realized;
 
@@ -83,6 +86,15 @@ function takeWhile(pred, coll) {
     if (pred(next)) return cons(next, takeWhile(pred, rest(coll)));
   }
   return empty(coll);
+}
+
+function transconj() {
+   // conj with transducer arity
+   switch (arguments.length) {
+     case 0: return Vec();
+     default:
+       return conj.apply(null, arguments);
+   };
 }
 
 function mapping(fn) {
@@ -139,6 +151,17 @@ function reduce(fn /* coll || init, coll */) {
   }
 }
 
+function transduce(xform, step, init, coll) {
+  switch (arguments.length) {
+    case 3: // no init supplied, coll as third arg
+      coll = arguments[2];
+      return reduce(xform(step), step(), coll);
+    case 4:
+      return reduce(xform(step), init, coll);
+    default: return nil;
+  }
+}
+
 function doall(coll) {
   if (isEmpty(coll)) return coll;
   return cons(first(coll), doall(rest(coll)));
@@ -183,6 +206,8 @@ module.exports = {
   rest: rest,
   cons: cons,
 
+  conj: transconj,
+
   inc: inc,
   dec: dec,
 
@@ -203,6 +228,8 @@ module.exports = {
   reduce: reduce,
   iterate: iterate,
   range: range,
+
+  transduce: transduce,
 
   // data structures
   LazySeq: LazySeq,
