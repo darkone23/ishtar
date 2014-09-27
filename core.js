@@ -59,7 +59,7 @@ function seqable(coll) {
   return seq(coll) !== nil;
 }
 
-function doseq(coll, fn) {
+function each(coll, fn) {
   while (seqable(coll)) {
     fn.call(null, first(coll));
     coll = rest(coll);
@@ -266,6 +266,22 @@ function transduce(xform, step, init, coll) {
   }
 }
 
+function into(to, xform, from) {
+  switch (arguments.length) {
+    case 1: return to;
+    case 2: // no xform supplied, from as second arg
+      from = arguments[1];
+      return reduce(conj, to, from);
+    case 3:
+      return transduce(xform, conj, to, from);
+    default: return nil;
+  }
+}
+
+function collect(coll) {
+  return into(empty(coll), coll);
+}
+
 function transconj() {
    // conj with transducer arity
    switch (arguments.length) {
@@ -275,9 +291,10 @@ function transconj() {
    };
 }
 
-function doall(coll) {
-  if (isEmpty(coll)) return coll;
-  return cons(first(coll), doall(rest(coll)));
+function drain(coll) {
+  // used when a lazy sequence is meant to side effect when running
+  while(seqable(coll)) coll = rest(coll);
+  return nil;
 }
 
 function iterate(fn, x) {
@@ -339,12 +356,14 @@ module.exports = {
   nil: nil,
 
   // xform 
-  doall: doall,
-  doseq: doseq,
+  into: into,
+  collect: collect,
+  each: each,
   map: map,
   mapcat: mapcat,
   reduce: reduce,
   iterate: iterate,
+  drain: drain,
   range: range,
 
   transduce: transduce,

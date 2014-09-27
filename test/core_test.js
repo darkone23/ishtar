@@ -8,7 +8,7 @@ describe('map', function() {
 
   it('works on arrays', function() {
     var mapped = map(function(x) { return x + 1; }, [1,2,3]);
-    doall(mapped).should.eql([2,3,4]);
+    into([], mapped).should.eql([2,3,4]);
     first(mapped).should.eql(2);
   });
 
@@ -17,13 +17,18 @@ describe('map', function() {
     var mapped = map(function(x) {
       return [ x[0], x[1] + 1 ];
     }, obj);
-    doall(mapped).should.eql({a:2, b:3, c:4});
+    into({}, mapped).should.eql({a:2, b:3, c:4});
     obj.should.eql({a:1, b:2, c:3});
   });
 
-  it('works on large Vectors', function() {
-    var mapped = map(function(x) { return x + 1; }, Vector(1,2,3));
-    equals(doall(map(inc, Range(0, 100).toVector())), Range(1, 101));
+  it('works on Ranges', function() {
+    var mapped = map(inc, Range(0,1000));
+    equals(Range(1, 1001), collect(mapped));
+  });
+
+  it('works on Vectors', function() {
+    var mapped = map(inc, Vector(1,2,3));
+    equals(Vector(2,3,4), collect(mapped));
   });
 
   it('works on Maps', function() {
@@ -31,7 +36,7 @@ describe('map', function() {
       var key = entry[0], val = entry[1];
       return [ key, val + 1 ];
     }, Map({a: 1, b: 2, c: 3}));
-    equals(doall(mapped), Map({a: 2, b: 3, c: 4}));
+    equals(collect(mapped), Map({a: 2, b: 3, c: 4}));
   });
 
   it('works on Sets', function() {
@@ -39,7 +44,7 @@ describe('map', function() {
         mapped = map(function(entry) {
           return entry * entry;
         }, set);
-    equals(doall(mapped), Set(1, 4, 9)).should.be.true;
+    equals(into(Set(), mapped), Set(1, 4, 9)).should.be.true;
   });
 });
 
@@ -59,10 +64,10 @@ describe('compose', function() {
   });
 });
 
-describe('doseq', function() {
+describe('each', function() {
   it('sequentially invokes fn', function() {
      var x = 0;
-     doseq(range(10), function(n) { x += n; });
+     each(range(10), function(n) { x += n; });
      x.should.equal(45);
   });
 });
@@ -160,12 +165,12 @@ describe('transduce', function() {
     it('works as a transducer', function() {
       var inc = map(function(x) { return x+1; });
       var mapped = transduce(inc, conj, Vector(), Vector(1,2,3));
-      equals(doall(mapped), Vector(2,3,4)).should.be.true;
+      equals(collect(mapped), Vector(2,3,4)).should.be.true;
     });
     it('works without an initial value', function() {
       var inc = map(function(x) { return x+1; });
       var mapped = transduce(inc, conj, Vector(1,2,3));
-      equals(doall(mapped), Vector(2,3,4)).should.be.true;
+      equals(collect(mapped), Vector(2,3,4)).should.be.true;
     });
   });
 });
