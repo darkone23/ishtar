@@ -113,6 +113,10 @@ describe('takeWhile', function() {
     var nums = [1,1,2,3,4];
     takeWhile(function(n) { return n < 3; }, nums).should.eql([1,1,2]);
   });
+  it('works as a transducer', function () {
+    var lessThan6 = function lessThan6(x) { return x < 6; };
+    transduce(takeWhile(lessThan6), conj, [], [2,3,4,5,6,7,8]).should.eql([2,3,4,5]);
+  });
 });
 
 describe('drop', function() {

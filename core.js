@@ -113,10 +113,10 @@ function dropping(n) {
     var i = n;
     return function(result, input) {
       switch (arguments.length) {
-	case 0: return step();
-	case 1: return step(result);
-	case 2: return (n-- > 0) ? result : step(result, input);
-	default: return nil;
+        case 0: return step();
+        case 1: return step(result);
+        case 2: return (n-- > 0) ? result : step(result, input);
+        default: return nil;
       }
     };
   };
@@ -127,19 +127,41 @@ function drop(n, coll) {
     case 1: return dropping(n);
     case 2:
       while (n > 0 && seqable(coll)) {
-	coll = rest(coll);
-	n -= 1;
+        coll = rest(coll);
+        n -= 1;
       }
       return coll;
   }
 }
 
+function takingWhile(pred) {
+  return function (step) {
+    return function (result, input) {
+      switch(arguments.length) {
+        case 0: return step();
+        case 1: return step(result);
+        case 2: 
+          if(pred(input)) {
+            return step(result, input);
+          } else {
+            return Reduced(result);
+          }
+        default: return nil;
+      }
+    };
+  };
+}
+
 function takeWhile(pred, coll) {
-  if(seqable(coll)) {
-    var next = first(coll);
-    if (pred(next)) return cons(next, takeWhile(pred, rest(coll)));
+  switch(arguments.length) {
+    case 1: return takingWhile(pred);
+    case 2: 
+      if(seqable(coll)) {
+        var next = first(coll);
+        if (pred(next)) return cons(next, takeWhile(pred, rest(coll)));
+      }
+      return empty(coll);
   }
-  return empty(coll);
 }
 
 function mapping(fn) {
