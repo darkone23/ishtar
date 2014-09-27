@@ -43,6 +43,22 @@ describe('map', function() {
   });
 });
 
+describe('compose', function() {
+  it('composes functions', function() {
+    var plusZero = compose(inc, dec);
+    plusZero(3).should.equal(3);
+  });
+  it('works with many functions', function() {
+    var pipeline = compose(
+      function(n) { return n + 2; },
+      function(n) { return n / 2; },
+      function(n) { return n * n; },
+      function(n) { return n + 1; } 
+    );
+    pipeline(1).should.equal(4);
+  });
+});
+
 describe('doseq', function() {
   it('sequentially invokes fn', function() {
      var x = 0;

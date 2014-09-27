@@ -68,6 +68,15 @@ function doseq(coll, fn) {
   return nil;
 }
 
+function compose(f, g /* fns... */) {
+  switch (arguments.length) {
+    case 0: return nil;
+    case 1: return f;
+    case 2: return function() { return f(g.apply(null, arguments)); };
+    default: return reduce(compose, Array.prototype.slice.call(arguments));
+  }
+}
+
 function take(n, coll) {
   if (n > 0 && seqable(coll)) {
     return cons(first(coll), take(n-1, rest(coll)));
@@ -142,10 +151,7 @@ function cat(step) {
 };
 
 function mapcat(fn) {
-  var mapping = map(fn);
-  return function(step) {
-    return mapping(cat(step));
-  }
+  return compose(map(fn), cat);
 }
 
 function reduce(fn, init, coll) {
@@ -268,6 +274,7 @@ module.exports = {
   range: range,
 
   transduce: transduce,
+  compose: compose,
 
   // data structures
   Reduced: Reduced,
