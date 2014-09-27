@@ -162,16 +162,29 @@ describe('transduce', function() {
 
 describe('mapcat', function() {
   it('transduces by reducing', function() {
-    var duplicate = function(x) { return [ x, x ]; };
-    var doubling = mapcat(duplicate);
-    transduce(doubling, conj, [], [1,2,3]).should.eql([1,1,2,2,3,3]);;
+    var pair = function(x) { return [ x, x ]; };
+    var repeating = mapcat(pair);
+    transduce(repeating, conj, [], [1,2,3]).should.eql([1,1,2,2,3,3]);;
   });
   it('can escape from infinite lists', function() {
-    var duplicate = function(x) { return Vec(x, x); };
-    var doubling = compose(mapcat(duplicate), take(3));
-    equals(transduce(doubling, conj, range()), Vec(0,0,1)).should.be.true;
+    var expected = 4, counter = 0;
+    var ensureLaziness = function(step) {
+      return function(x, y) {
+	if (++counter > expected) throw new Error("transducer isn't lazy");
+	return step(x, y);
+      };
+    };
+    var pair = function(x) { return Vec(x, x); };
+    var square = function(x) { return x * x; };
+    var xform = compose(
+      ensureLaziness,
+      mapcat(pair),
+      map(square),
+      drop(expected - 1),
+      take(expected)
+    );
+    equals(transduce(xform, conj, range()), Vec(1,4,4,9)).should.be.true;
   });
-  // TODO: test mapcat allows escape when comp'd with other transducers (like take)
 });
 
 describe('Reduced', function () {
