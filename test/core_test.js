@@ -59,6 +59,17 @@ describe('filter', function() {
   });
 });
 
+describe('remove', function() {
+  it('removes by a predicate fn', function() {
+    function odd(entry) { return entry[1] % 2; }
+    into({}, remove(odd, {a: 1, b: 2, c: 3, d: 4})).should.eql({b: 2, d: 4});
+  });
+  it('works as a transducer', function() {
+    function odd(x) { return x % 2; }
+    into([], remove(odd), range(0, 4)).should.eql([0,2]);
+  });
+});
+
 describe('compose', function() {
   it('composes functions', function() {
     var plusZero = compose(inc, dec);

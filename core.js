@@ -47,6 +47,12 @@ function dec(x) {
   return x - 1;
 }
 
+function complement(fn) {
+  return function() {
+    return ! fn.apply(null, arguments);
+  };
+}
+
 function second(coll) {
   return first(rest(coll));
 }
@@ -255,6 +261,13 @@ function filter(fn, coll) {
   }
 }
 
+function remove(fn, coll) {
+  switch (arguments.length) {
+    case 1: return filter(complement(fn));
+    case 2: return filter(complement(fn), coll);
+  }
+}
+
 function cat(step) {
   // mapcat transducer
   return function(result, input) {
@@ -413,6 +426,7 @@ module.exports = {
   each: each,
   map: map,
   filter: filter,
+  remove: remove,
   mapcat: mapcat,
   reduce: reduce,
   iterate: iterate,
