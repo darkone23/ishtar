@@ -249,7 +249,11 @@ describe('Reduced', function () {
 
 describe('take-nth', function () {
   it('creates a sequence of every nth element in the collection', function () {
-    takeNth(2, [0,1,2,3,4,5,6,7,8,9]).should.eql([0,2,4,6,8]);
+    var result = takeNth(2, [0,1,2,3,4,5,6,7,8,9]);
+    into([], result).should.eql([0,2,4,6,8]);
+
+    var cycled = takeNth(2, cycle(['a', 'b', 'c']));
+    into([], take(4, cycled)).should.eql(['a','c','b','a']);
   });
   it('works as a transducer', function () {
     transduce(takeNth(2), conj, [], [0,1,2,3,4,5]).should.eql([0,2,4]);

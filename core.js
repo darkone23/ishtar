@@ -135,7 +135,9 @@ function takeNth(n, coll) {
     case 1: return takingNth(n);
     case 2: 
       if(n > 0 && seqable(coll)) {
-        return cons(first(coll), takeNth(n, drop(n, coll)));
+        return LazySeq(function () {
+            return cons(first(seq(coll)), takeNth(n, drop(n, seq(coll))));
+        });
       }
       return empty(coll);
   }
