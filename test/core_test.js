@@ -48,6 +48,17 @@ describe('map', function() {
   });
 });
 
+describe('filter', function() {
+  it('filters by a predicate fn', function() {
+    function odd(entry) { return entry[1] % 2; }
+    into({}, filter(odd, {a: 1, b: 2, c: 3, d: 4})).should.eql({a: 1, c: 3});
+  });
+  it('works as a transducer', function() {
+    function odd(x) { return x % 2; }
+    into([], filter(odd), range(0, 4)).should.eql([1,3]);
+  });
+});
+
 describe('compose', function() {
   it('composes functions', function() {
     var plusZero = compose(inc, dec);

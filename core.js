@@ -200,10 +200,10 @@ function mapping(fn) {
   return function(step) {
     return function(result, input) {
       switch (arguments.length) {
-	case 0: return step();
-	case 1: return step(result);
-	case 2: return step(result, fn(input));
-	default: return nil;
+        case 0: return step();
+        case 1: return step(result);
+        case 2: return step(result, fn(input));
+        default: return nil;
       };
     };
   };
@@ -217,6 +217,36 @@ function map(fn, coll) {
       if (seqable(coll)) { 
         return LazySeq(function() {
           return cons(fn(first(coll)), map(fn, rest(coll)));
+        });
+      } else {
+        return coll;
+      }
+    default: return nil;
+  }
+}
+
+function filtering(fn) {
+  return function(step) {
+    return function(result, input) {
+      switch (arguments.length) {
+        case 0: return step();
+        case 1: return step(result);
+        case 2: return fn(input) ? step(result, input) : result;
+        default: return nil;
+      }
+    };
+  };
+}
+
+function filter(fn, coll) {
+  switch (arguments.length) {
+    case 1: return filtering(fn);
+    case 2:
+      if (seqable(coll)) { 
+        return LazySeq(function() {
+          var fst = first(coll),
+              rst = filter(fn, rest(coll));
+          return fn(fst) ? cons(fst, rst) : rst;
         });
       } else {
         return coll;
@@ -382,6 +412,7 @@ module.exports = {
   collect: collect,
   each: each,
   map: map,
+  filter: filter,
   mapcat: mapcat,
   reduce: reduce,
   iterate: iterate,
