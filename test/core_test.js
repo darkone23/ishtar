@@ -255,3 +255,12 @@ describe('take-nth', function () {
     transduce(takeNth(2), conj, [], [0,1,2,3,4,5]).should.eql([0,2,4]);
   });
 });
+
+describe('cycle', function () {
+  it('produces a sequence which is the repetition of the items in the collection', function () {
+    var collection = [1,2,3],
+        cycled = cycle(collection);
+    equals(take(6, cycled), Vector(1,2,3,1,2,3)).should.be.true;
+    equals(take(12, cycled), Vector(1,2,3,1,2,3,1,2,3,1,2,3)).should.be.true;
+  });
+});

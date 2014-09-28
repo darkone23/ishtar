@@ -412,6 +412,14 @@ function iterate(fn, x) {
   }));
 }
 
+function cycle(coll) {
+  if (seqable(coll)) {
+    return concat(seq(coll), LazySeq(function () {
+      return cycle(seq(coll));
+    }));
+  }
+}
+
 function range(start, end, step) {
   // returns a lazy, possibly infinite range of numbers
   switch (arguments.length) {
@@ -477,6 +485,7 @@ module.exports = {
   iterate: iterate,
   drain: drain,
   range: range,
+  cycle: cycle,
 
   transduce: transduce,
   compose: compose,
