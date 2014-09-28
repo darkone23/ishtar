@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var webpack = require('gulp-webpack');
-var uglify = require('webpack').optimize.UglifyJsPlugin
 
 var package = require('./package.json');
 
@@ -10,9 +9,8 @@ gulp.task('dist', function() {
     .pipe(webpack({
       output: {
         library: "Ishtar",
-        filename: "ishtar-" + package.version + ".min.js"
+        filename: "ishtar-" + package.version + ".js"
       },
-      plugins: [ new uglify() ]
      }))
     .pipe(gulp.dest('dist/'));
 });
