@@ -113,11 +113,32 @@ function take(n, coll) {
   }
 }
 
+function takingNth(n) {
+  return function (step) {
+    var iter = -1;
+    return function (result, input) {
+      switch (arguments.length) {
+        case 0: return step();
+        case 1: return step(result);
+        case 2: 
+          if(++iter % n == 0) {
+            return step(result, input);
+          }
+          return result;
+      }
+    };
+  };
+}
+
 function takeNth(n, coll) {
-  if(n > 0 && seqable(coll)) {
-    return cons(first(coll), takeNth(n, drop(n, coll)));
+  switch (arguments.length) {
+    case 1: return takingNth(n);
+    case 2: 
+      if(n > 0 && seqable(coll)) {
+        return cons(first(coll), takeNth(n, drop(n, coll)));
+      }
+      return empty(coll);
   }
-  return empty(coll);
 }
 
 function dropping(n) {
