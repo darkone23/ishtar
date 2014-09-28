@@ -11,7 +11,9 @@
   "devDependencies": {
     "gulp-mocha": "~1.1.0",
     "gulp": "^3.8.8",
-    "should": "^4.0.4"
+    "should": "^4.0.4",
+    "gulp-webpack": "^0.4.0",
+    "webpack": "^1.4.4"
   },
   "scripts": {
     "test": "gulp test"
