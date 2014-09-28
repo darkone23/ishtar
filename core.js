@@ -113,6 +113,13 @@ function take(n, coll) {
   }
 }
 
+function takeNth(n, coll) {
+  if(n > 0 && seqable(coll)) {
+    return cons(first(coll), takeNth(n, drop(n, coll)));
+  }
+  return empty(coll);
+}
+
 function dropping(n) {
   return function(step) {
     var i = n;
@@ -414,6 +421,7 @@ module.exports = {
 
   take: take,
   takeWhile: takeWhile,
+  takeNth: takeNth,
   drop: drop,
   dropWhile: dropWhile,
   second: second,
