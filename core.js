@@ -414,9 +414,9 @@ function iterate(fn, x) {
 
 function cycle(coll) {
   if (seqable(coll)) {
-    return concat(seq(coll), LazySeq(function () {
-      return cycle(seq(coll));
-    }));
+    return LazySeq(function () {
+      return concat(seq(coll), cycle(seq(coll)));
+    });
   }
 }
 
