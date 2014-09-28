@@ -296,6 +296,21 @@ function remove(fn, coll) {
   }
 }
 
+function concat(a, b) {
+  switch (arguments.length) {
+    case 0: return LazySeq(function() { return Vector(); });
+    case 1: return LazySeq(function() { return a; });
+    case 2:
+      return LazySeq(function() {
+        if (seqable(a)) {
+          return cons(first(a), concat(rest(a), b));
+        }
+        return b;
+      });
+    default: return nil;
+  }
+}
+
 function cat(step) {
   // mapcat transducer
   return function(result, input) {
@@ -456,6 +471,7 @@ module.exports = {
   map: map,
   filter: filter,
   remove: remove,
+  concat: concat,
   mapcat: mapcat,
   reduce: reduce,
   iterate: iterate,

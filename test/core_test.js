@@ -48,6 +48,15 @@ describe('map', function() {
   });
 });
 
+describe('concat', function() {
+  it('lazily concatenates seqs', function() {
+    var lst = concat(Set("a", "b", "c"), Vector(1, 2, 3));
+    realized(lst).should.be.false;
+    into([], lst).should.eql(["a", "b", "c", 1, 2, 3]);
+    realized(lst).should.be.true;
+  });
+});
+
 describe('filter', function() {
   it('filters by a predicate fn', function() {
     function odd(entry) { return entry[1] % 2; }
