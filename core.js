@@ -133,15 +133,37 @@ function drop(n, coll) {
   }
 }
 
+function droppingWhile(pred) {
+  return function (step) {
+    return function (result, input) {
+      switch (arguments.length) {
+        case 0: return step();
+        case 1: return step(result);
+        case 2:
+          if(pred(input)) {
+            return result;
+          } else {
+            return step(result, input);
+          }
+        default: return nil;
+      }
+    };
+  };
+}
+
 function dropWhile(pred, coll) {
-  if(seqable(coll)) {
-    var next = first(coll);
-    if (pred(next)) {
-      return dropWhile(pred, rest(coll));
-    }
-    return coll;
+  switch (arguments.length) {
+    case 1: return droppingWhile(pred);
+    case 2: 
+      if(seqable(coll)) {
+        var next = first(coll);
+        if (pred(next)) {
+          return dropWhile(pred, rest(coll));
+        }
+        return coll;
+      }
+      return empty(coll);
   }
-  return empty(coll);
 }
 
 function takingWhile(pred) {

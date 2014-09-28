@@ -138,6 +138,9 @@ describe('dropWhile', function() {
   it('drops while a predicate holds', function() {
     dropWhile(function(n) { return n <= 5; }, [1,2,3,4,5,6,7,8,9]).should.eql([6,7,8,9]);
   });
+  it('drops while works a transducer', function() {
+    transduce(dropWhile(function(n) { return n <= 5; }), conj, [], [1,2,3,4,5,6,7,8,9]).should.eql([6,7,8,9]);
+  });
 });
 
 describe('range', function() {
