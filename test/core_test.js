@@ -140,7 +140,7 @@ describe('take', function() {
     take(10, [0,1,2,3,4,5]).should.eql([0,1,2,3,4,5]);
   });
   it('works as a transducer', function() {
-    transduce(take(3), conj, [], [1,2,3,4,5]).should.eql([1,2,3]);
+    into([], take(3), [1,2,3,4,5]).should.eql([1,2,3]);
   });
 });
 
@@ -151,7 +151,7 @@ describe('takeWhile', function() {
   });
   it('works as a transducer', function () {
     var lessThan6 = function lessThan6(x) { return x < 6; };
-    transduce(takeWhile(lessThan6), conj, [], [2,3,4,5,6,7,8]).should.eql([2,3,4,5]);
+    into([], takeWhile(lessThan6), [2,3,4,5,6,7,8]).should.eql([2,3,4,5]);
   });
 });
 
@@ -161,7 +161,7 @@ describe('drop', function() {
     drop(10, [0,1,2,3,4,5]).should.eql([]);
   });
   it('works as a transducer', function() {
-    transduce(drop(2), conj, [], [1,2,3,4,5]).should.eql([3,4,5]);
+    transduce(drop(2), append, [], [1,2,3,4,5]).should.eql([3,4,5]);
   });
 });
 
@@ -170,7 +170,7 @@ describe('dropWhile', function() {
     dropWhile(function(n) { return n <= 5; }, [1,2,3,4,5,6,7,8,9]).should.eql([6,7,8,9]);
   });
   it('drops while works a transducer', function() {
-    transduce(dropWhile(function(n) { return n <= 5; }), conj, [], [1,2,3,4,5,6,7,8,9]).should.eql([6,7,8,9]);
+    transduce(dropWhile(function(n) { return n <= 5; }), append, [], [1,2,3,4,5,6,7,8,9]).should.eql([6,7,8,9]);
   });
 });
 
@@ -198,12 +198,12 @@ describe('transduce', function() {
   describe('map transducer', function() {
     it('works as a transducer', function() {
       var inc = map(function(x) { return x+1; });
-      var mapped = transduce(inc, conj, Vector(), Vector(1,2,3));
+      var mapped = transduce(inc, append, Vector(), Vector(1,2,3));
       equals(collect(mapped), Vector(2,3,4)).should.be.true;
     });
     it('works without an initial value', function() {
       var inc = map(function(x) { return x+1; });
-      var mapped = transduce(inc, conj, Vector(1,2,3));
+      var mapped = transduce(inc, append, Vector(1,2,3));
       equals(collect(mapped), Vector(2,3,4)).should.be.true;
     });
   });
@@ -213,7 +213,7 @@ describe('mapcat', function() {
   it('transduces by reducing', function() {
     var pair = function(x) { return [ x, x ]; };
     var repeating = mapcat(pair);
-    transduce(repeating, conj, [], [1,2,3]).should.eql([1,1,2,2,3,3]);;
+    transduce(repeating, append, [], [1,2,3]).should.eql([1,1,2,2,3,3]);;
   });
   it('can escape from infinite lists', function() {
     var expected = 4, counter = 0;
@@ -232,7 +232,7 @@ describe('mapcat', function() {
       drop(expected - 1),
       take(expected)
     );
-    equals(transduce(xform, conj, range()), Vector(1,4,4,9)).should.be.true;
+    equals(transduce(xform, append, range()), Vector(1,4,4,9)).should.be.true;
   });
 });
 
@@ -256,7 +256,7 @@ describe('take-nth', function () {
     into([], take(4, cycled)).should.eql(['a','c','b','a']);
   });
   it('works as a transducer', function () {
-    transduce(takeNth(2), conj, [], [0,1,2,3,4,5]).should.eql([0,2,4]);
+    transduce(takeNth(2), append, [], [0,1,2,3,4,5]).should.eql([0,2,4]);
   });
 });
 

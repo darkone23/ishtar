@@ -28,7 +28,7 @@ var protocols = require("./lib/protocols"),
     IAppend = protocols.IAppend,
     IAssociative = protocols.IAssociative,
     IWrap = protocols.IWrap,
-    ICollection = protocols.ICollection;
+    ICountable = protocols.ICountable;
 
 var has = IAssociative.has,
     get = IAssociative.get,
@@ -39,10 +39,10 @@ var seq = ISeq.seq,
     rest = ISeq.rest,
     cons = ISeq.cons;
 
-var count = ICollection.count,
-    empty = ICollection.empty;
+var count = ICountable.count;
 
-var conj = IAppend.conj;
+var append = IAppend.append,
+    empty = IAppend.empty;
 
 var unwrap = IWrap.unwrap;
 
@@ -386,23 +386,28 @@ function into(to, xform, from) {
     case 1: return to;
     case 2: // no xform supplied, from as second arg
       from = arguments[1];
-      return reduce(conj, to, from);
+      return reduce(append, to, from);
     case 3:
-      return transduce(xform, conj, to, from);
+      return transduce(xform, append, to, from);
     default: return nil;
   }
 }
 
-function collect(coll) {
-  return into(empty(coll), coll);
+function collect(xform, coll) {
+  switch (arguments.length) {
+    case 1: // no xform supplied, coll as first arg
+      coll = arguments[0];
+      return into(empty(coll), coll);
+    case 2:
+      return into(empty(coll), xform, coll);
+  }
 }
 
-function transconj() {
+function initAppend() {
    // conj with transducer arity
    switch (arguments.length) {
      case 0: return Vector();
-     default:
-       return conj.apply(null, arguments);
+     default: return append.apply(null, arguments);
    };
 }
 
@@ -485,7 +490,7 @@ module.exports = {
   set: set,
   getPath: getPath,
 
-  conj: transconj,
+  append: initAppend,
 
   inc: inc,
   dec: dec,
