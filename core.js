@@ -26,8 +26,13 @@ var protocols = require("./lib/protocols"),
     ISeq = protocols.ISeq,
     IPending = protocols.IPending,
     IAppend = protocols.IAppend,
+    IAssociative = protocols.IAssociative,
     IWrap = protocols.IWrap,
     ICollection = protocols.ICollection;
+
+var has = IAssociative.has,
+    get = IAssociative.get,
+    set = IAssociative.set;
 
 var seq = ISeq.seq,
     first = ISeq.first,
@@ -456,6 +461,10 @@ module.exports = {
   first: first,
   rest: rest,
   cons: cons,
+
+  has: has,
+  get: get,
+  set: set,
 
   conj: transconj,
 
