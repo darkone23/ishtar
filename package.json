@@ -9,10 +9,12 @@
     "immutable": "^2.0.17"
   },
   "devDependencies": {
-    "gulp-mocha": "~1.1.0",
     "gulp": "^3.8.8",
-    "should": "^4.0.4",
-    "gulp-webpack": "^0.4.0"
+    "gulp-jshint": "^1.8.5",
+    "gulp-mocha": "~1.1.0",
+    "gulp-webpack": "^0.4.0",
+    "jshint-stylish": "^1.0.0",
+    "should": "^4.0.4"
   },
   "scripts": {
     "test": "gulp test"

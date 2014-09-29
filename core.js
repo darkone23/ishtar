@@ -1,3 +1,4 @@
+(function init() {
 "use strict";
 
 var Immutable = require("immutable");
@@ -14,7 +15,6 @@ var collections = require("./lib/collections"),
     Map = collections.Map,
     Vector = collections.Vector,
     Set = collections.Set,
-    Reduced = collections.Reduced,
     LazySeq = collections.LazySeq;
 
 var reduced = require("./lib/reduced"),
@@ -136,7 +136,7 @@ function takingNth(n) {
         case 0: return step();
         case 1: return step(result);
         case 2: 
-          if(++iter % n == 0) {
+          if(++iter % n === 0) {
             return step(result, input);
           }
           return result;
@@ -255,7 +255,7 @@ function mapping(fn) {
         case 1: return step(result);
         case 2: return step(result, fn(input));
         default: return nil;
-      };
+      }
     };
   };
 }
@@ -344,9 +344,9 @@ function cat(step) {
         };
         return reduce(reducer, result, input);
       default: return nil;
-    };
+    }
   };
-};
+}
 
 function mapcat(fn) {
   return compose(map(fn), cat);
@@ -363,10 +363,7 @@ function reduce(fn, init, coll) {
         var result = init;
         while(seqable(coll)) {
           result = fn(result, first(coll));
-          if (isReduced(result)) {
-            result = unwrap(result);
-            break;
-          }
+          if (isReduced(result)) return unwrap(result);
           coll = rest(coll);
         }
         return result;
@@ -410,14 +407,13 @@ function collect(xform, coll) {
 }
 
 function initAppend() {
-   // conj with transducer arity
    switch (arguments.length) {
      case 0: return Vector();
      default: return append.apply(null, arguments);
-   };
+   }
 }
 
-function drain(coll) {
+function exhaust(coll) {
   // used when a lazy sequence is meant to side effect when running
   while(seqable(coll)) coll = rest(coll);
   return nil;
@@ -450,7 +446,7 @@ function range(start, end, step) {
       if (step > 0) compare = function(x, end) { return x < end; };
       if (step < 0) compare = function(x, end) { return x > end; };
       if (compare(start, end)) {
-	return cons(start, LazySeq(function() {
+        return cons(start, LazySeq(function() {
 	  return range(start + step, end, step);
 	}));
       } else {
@@ -463,7 +459,7 @@ function getPath(assoc, path, notFound) {
   switch (arguments.length) {
     case 2: return getPath(assoc, path, nil);
     case 3:
-      var missing = new Object();
+      var missing = {};
       while (seqable(path)) {
         if (satisfies(IAssociative, assoc)) {
           assoc = get(assoc, first(path), missing);
@@ -477,7 +473,6 @@ function getPath(assoc, path, notFound) {
   }
 }
 
-var module = module || {};
 module.exports = {
   eq: eq,
 
@@ -524,7 +519,7 @@ module.exports = {
   mapcat: mapcat,
   reduce: reduce,
   iterate: iterate,
-  drain: drain,
+  exhaust: exhaust,
   range: range,
   cycle: cycle,
 
@@ -552,3 +547,5 @@ module.exports = {
     });
   }
 };
+
+})();

@@ -1,0 +1,10 @@
+{
+  /* redefinition of native types (aliasing things like Map, Set, etc) */
+  "-W079": true,
+
+  /* warnings when using case statements without break */
+  "-W086": true,
+
+  /* using Constructors() without the `new` keyword */
+  "newcap": false
+}
