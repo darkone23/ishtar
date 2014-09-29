@@ -448,6 +448,24 @@ function range(start, end, step) {
   }
 }
 
+function getPath(assoc, path, notFound) {
+  switch (arguments.length) {
+    case 2: return getPath(assoc, path, nil);
+    case 3:
+      var missing = new Object();
+      while (seqable(path)) {
+        if (satisfies(IAssociative, assoc)) {
+          assoc = get(assoc, first(path), missing);
+          if (assoc === missing) return notFound;
+        } else {
+          return notFound;
+        }
+        path = rest(path);
+      }
+      return assoc;
+  }
+}
+
 var module = module || {};
 module.exports = {
   equals: Immutable.is,
@@ -465,6 +483,7 @@ module.exports = {
   has: has,
   get: get,
   set: set,
+  getPath: getPath,
 
   conj: transconj,
 

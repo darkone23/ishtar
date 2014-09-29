@@ -21,3 +21,10 @@ describe('IAssociative', function() {
   });
 });
 
+describe('getPath', function() {
+  it('gets nested assocs by a path', function() {
+    getPath({a: {b: 23}}, ['a', 'b']).should.eql(23);
+    getPath({a: {b: 23}}, ['a', 'z']).should.eql(nil);
+    getPath({a: {b: 23}}, ['a', 'b', 'c'], 42).should.eql(42);
+  });
+});
