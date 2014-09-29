@@ -22,13 +22,13 @@ describe('map', function() {
   });
 
   it('works on Ranges', function() {
-    var mapped = map(inc, Range(0,1000));
-    equals(Range(1, 1001), collect(mapped));
+    var mapped = map(inc, Range(0,10));
+    eq(range(1, 11), mapped).should.be.true;
   });
 
   it('works on Vectors', function() {
     var mapped = map(inc, Vector(1,2,3));
-    equals(Vector(2,3,4), collect(mapped));
+    eq(Vector(2,3,4), collect(mapped)).should.be.true;
   });
 
   it('works on Maps', function() {
@@ -36,7 +36,7 @@ describe('map', function() {
       var key = entry[0], val = entry[1];
       return [ key, val + 1 ];
     }, Map({a: 1, b: 2, c: 3}));
-    equals(collect(mapped), Map({a: 2, b: 3, c: 4}));
+    eq(into(Map(), mapped), Map({a: 2, b: 3, c: 4})).should.be.true;
   });
 
   it('works on Sets', function() {
@@ -44,7 +44,7 @@ describe('map', function() {
         mapped = map(function(entry) {
           return entry * entry;
         }, set);
-    equals(into(Set(), mapped), Set(1, 4, 9)).should.be.true;
+    eq(into(Set(), mapped), Set(1, 4, 9)).should.be.true;
   });
 });
 
@@ -177,7 +177,7 @@ describe('dropWhile', function() {
 describe('range', function() {
   it('returns a lazy range of numbers', function() {
     var threes = range(0, 100, 3);
-    equals(take(5, threes), Vector(0, 3, 6, 9, 12)).should.be.true;
+    eq(take(5, threes), Vector(0, 3, 6, 9, 12)).should.be.true;
   });
 });
 
@@ -190,7 +190,7 @@ describe('iterate', function() {
     };
     var fibs = map(first, iterate(step, seed));
     count(take(10, fibs)).should.equal(10);
-    equals(take(10, fibs), Vector(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)).should.be.true;
+    eq(take(10, fibs), Vector(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)).should.be.true;
   });
 });
 
@@ -199,12 +199,12 @@ describe('transduce', function() {
     it('works as a transducer', function() {
       var inc = map(function(x) { return x+1; });
       var mapped = transduce(inc, append, Vector(), Vector(1,2,3));
-      equals(collect(mapped), Vector(2,3,4)).should.be.true;
+      eq(collect(mapped), Vector(2,3,4)).should.be.true;
     });
     it('works without an initial value', function() {
       var inc = map(function(x) { return x+1; });
       var mapped = transduce(inc, append, Vector(1,2,3));
-      equals(collect(mapped), Vector(2,3,4)).should.be.true;
+      eq(collect(mapped), Vector(2,3,4)).should.be.true;
     });
   });
 });
@@ -232,7 +232,7 @@ describe('mapcat', function() {
       drop(expected - 1),
       take(expected)
     );
-    equals(transduce(xform, append, range()), Vector(1,4,4,9)).should.be.true;
+    eq(transduce(xform, append, range()), Vector(1,4,4,9)).should.be.true;
   });
 });
 
@@ -264,7 +264,7 @@ describe('cycle', function () {
   it('produces a sequence which is the repetition of the items in the collection', function () {
     var collection = [1,2,3],
         cycled = cycle(collection);
-    equals(take(6, cycled), Vector(1,2,3,1,2,3)).should.be.true;
-    equals(take(12, cycled), Vector(1,2,3,1,2,3,1,2,3,1,2,3)).should.be.true;
+    eq(take(6, cycled), Vector(1,2,3,1,2,3)).should.be.true;
+    eq(take(12, cycled), Vector(1,2,3,1,2,3,1,2,3,1,2,3)).should.be.true;
   });
 });

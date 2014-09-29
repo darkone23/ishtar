@@ -44,7 +44,7 @@ describe('protocols', function(){
           hd = Seq.head(list),
 	  tl = Seq.tail(list);
       hd.should.equal(1);
-      equals(tl, Vector(2,3)).should.be.true;
+      eq(tl, Vector(2,3)).should.be.true;
     });
     it("throws for things that do not implement the protocol", function() {
       (function() { Seq.head([1,2,3]); }).should.throw();

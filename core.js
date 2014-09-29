@@ -1,7 +1,6 @@
 "use strict";
 
-var Immutable = require("immutable"),
-    equals = Immutable.is;
+var Immutable = require("immutable");
 
 var nil = require("./lib/nil");
 
@@ -80,6 +79,13 @@ function each(coll, fn) {
     coll = rest(coll);
   }
   return nil;
+}
+
+function eq(x, y) {
+  return Immutable.is(
+    collect(x),
+    collect(y)
+  );
 }
 
 function compose(f, g /* fns... */) {
@@ -473,7 +479,7 @@ function getPath(assoc, path, notFound) {
 
 var module = module || {};
 module.exports = {
-  equals: Immutable.is,
+  eq: eq,
 
   realized: realized,
 
