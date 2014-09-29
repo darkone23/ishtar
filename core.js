@@ -5,11 +5,11 @@ var Immutable = require("immutable"),
 
 var nil = require("./lib/nil");
 
-var proto = require("./lib/proto"),
-    defprotocol = proto.defprotocol,
-    self = proto.self,
-    extend = proto.extend,
-    satisfies = proto.satisfies;
+var dispatch = require("./lib/dispatch"),
+    defprotocol = dispatch.defprotocol,
+    self = dispatch.self,
+    extend = dispatch.extend,
+    satisfies = dispatch.satisfies;
 
 var collections = require("./lib/collections"),
     Map = collections.Map,
@@ -17,6 +17,10 @@ var collections = require("./lib/collections"),
     Set = collections.Set,
     Reduced = collections.Reduced,
     LazySeq = collections.LazySeq;
+
+var reduced = require("./lib/reduced"),
+    Reduced = reduced.Reduced,
+    isReduced = reduced.isReduced;
 
 var protocols = require("./lib/protocols"),
     ISeq = protocols.ISeq,
@@ -359,10 +363,6 @@ function reduce(fn, init, coll) {
       return init;
     default: return nil;
   }
-}
-
-function isReduced(x) {
-  return (x instanceof Reduced);
 }
 
 function transduce(xform, step, init, coll) {
