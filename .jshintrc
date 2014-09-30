@@ -6,5 +6,8 @@
   "-W086": true,
 
   /* using Constructors() without the `new` keyword */
-  "newcap": false
+  "newcap": false,
+
+  /* allow our loose exists check */
+  "eqnull": true
 }

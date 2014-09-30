@@ -18,6 +18,7 @@ gulp.task('dist', function() {
 
 gulp.task('lint', function() {
   return gulp.src([
+      'Gulpfile.js',
       'core.js',
       'lib/*.js'
     ])

@@ -186,12 +186,12 @@ describe('dropWhile', function() {
 
 describe('keep', function() {
   it('is like map, but filtering for existy values', function() {
-    var x = {a: "exists", b: each([]), c: null, d: "only"}
+    var x = {a: "exists", b: each([]), c: null, d: "only", e: void 23}
     var keys = ['a', 'b', 'c', 'd']
     into([], keep(get.bind(null, x), keys)).should.eql(["exists", "only"]);
   });
   it('works as a transducer', function() {
-    var x = {a: "exists", b: each([]), c: null, d: "only"}
+    var x = {a: "exists", b: each([]), c: null, d: "only", e: void 23}
     var keys = ['a', 'b', 'c', 'd']
     into([], keep(get.bind(null, x)), keys).should.eql(["exists", "only"]);
   });
