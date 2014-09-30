@@ -97,6 +97,26 @@ function comp(f, g /* fns... */) {
   }
 }
 
+function juxt(f, g /* fns... */ ) {
+  switch (arguments.length) {
+    case 0: return nil;
+    case 1: return function() { return [ f.apply(null, arguments) ] };
+    case 2:
+      return function() {
+        return [ f.apply(null, arguments), g.apply(null, arguments) ];
+      };
+    default:
+      var fns = arguments;
+      return function() {
+        var args = arguments;
+        return reduce(function(results, fn) {
+          return append(results, fn.apply(null, args));
+        }, [], Array.prototype.slice.call(fns));
+      }
+  }
+}
+
+
 function taking(n) {
  return function(step) {
     var iter = n;
@@ -550,7 +570,9 @@ module.exports = {
   cycle: cycle,
 
   transduce: transduce,
+
   comp: comp,
+  juxt: juxt,
 
   // data structures
   Reduced: Reduced,

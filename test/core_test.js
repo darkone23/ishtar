@@ -95,6 +95,17 @@ describe('comp', function() {
   });
 });
 
+describe('juxt', function() {
+  it('juxtaposes function application', function() {
+     var div = function(x, y) { return x / y };
+     var mod = function(x, y) { return x % y };
+     var add = function(x, y) { return x + y };
+     var sub = function(x, y) { return x - y };
+     juxt(div, mod, add, sub)(50, 100).should.eql([0.5, 50, 150, -50]);
+  });
+});
+
+
 describe('each', function() {
   it('sequentially invokes fn', function() {
      var x = 0;
