@@ -28,7 +28,7 @@ Range(0, 10, 2).toVector()
 // Vector [ 0, 2, 4, 6, 8 ]
 ~~~
 
-You can interact with these types directly or use [*transducers*](http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming) to pipeline `xforms` across them.
+You can interact with these types directly or use *[transducers](http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming)* to pipeline `xforms` across them.
 
 ### Transducers
 
