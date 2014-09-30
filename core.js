@@ -88,12 +88,12 @@ function eq(x, y) {
   );
 }
 
-function compose(f, g /* fns... */) {
+function comp(f, g /* fns... */) {
   switch (arguments.length) {
     case 0: return nil;
     case 1: return f;
     case 2: return function() { return f(g.apply(null, arguments)); };
-    default: return reduce(compose, Array.prototype.slice.call(arguments));
+    default: return reduce(comp, Array.prototype.slice.call(arguments));
   }
 }
 
@@ -349,7 +349,7 @@ function cat(step) {
 }
 
 function mapcat(fn) {
-  return compose(map(fn), cat);
+  return comp(map(fn), cat);
 }
 
 function reduce(fn, init, coll) {
@@ -524,7 +524,7 @@ module.exports = {
   cycle: cycle,
 
   transduce: transduce,
-  compose: compose,
+  comp: comp,
 
   // data structures
   Reduced: Reduced,

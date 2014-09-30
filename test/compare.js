@@ -46,7 +46,7 @@ I S H T A R ====================
 ============================= */
 var ishtar = require("../core");
 var istart = new Date();
-ishtar.collect(ishtar.compose(
+ishtar.collect(ishtar.comp(
   ishtar.map(dec),
   ishtar.filter(odd),
   ishtar.drop(x / 4),

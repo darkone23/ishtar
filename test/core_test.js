@@ -79,13 +79,13 @@ describe('remove', function() {
   });
 });
 
-describe('compose', function() {
+describe('comp', function() {
   it('composes functions', function() {
-    var plusZero = compose(inc, dec);
+    var plusZero = comp(inc, dec);
     plusZero(3).should.equal(3);
   });
   it('works with many functions', function() {
-    var pipeline = compose(
+    var pipeline = comp(
       function(n) { return n + 2; },
       function(n) { return n / 2; },
       function(n) { return n * n; },
@@ -225,7 +225,7 @@ describe('mapcat', function() {
     };
     var pair = function(x) { return Vector(x, x); };
     var square = function(x) { return x * x; };
-    var xform = compose(
+    var xform = comp(
       ensureLaziness,
       mapcat(pair),
       map(square),
