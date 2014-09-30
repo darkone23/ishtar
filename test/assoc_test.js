@@ -21,6 +21,21 @@ describe('IAssociative', function() {
   });
 });
 
+describe('mapKeys', function() {
+  it('maps over keys', function() {
+    var a = {a: 1, b: 2};
+    into({}, mapKeys(function(x) { return x.toUpperCase() }), a).should.eql({A: 1, B: 2});
+  });
+});
+
+describe('mapVals', function() {
+  it('maps over vals', function() {
+    var a = {a: 1, b: 2};
+    into({}, mapVals(inc), a).should.eql({a: 2, b: 3});
+  });
+});
+
+
 describe('getPath', function() {
   it('gets nested assocs by a path', function() {
     getPath({a: {b: 23}}, ['a', 'b']).should.eql(23);

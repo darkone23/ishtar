@@ -33,30 +33,30 @@ You can interact with these types directly or use [*transducers*](http://blog.co
 ### Transducers
 
 ~~~js
-// map entries are format [ key, val ]
-function asciiKey(num) {
-  return [ String.fromCharCode(num + 97), num ]
+function alpha(num) {
+  return String.fromCharCode(num + 97)
 }
 
-function capsKey(entry) {
-  return [ entry[0].toUpperCase(), entry[1] ]
+function caps(key) {
+  return key.toUpperCase();
 }
+
+// juxt returns a list built from applying each of the provided fns
+var alphaKey = juxt(alpha, identity);
+// alphaKey(3) => [ 'c', 3 ]
 
 // comp lets us compose functions, in this case transducers
-var xform = comp(
-  takeNth(3),
-  map(asciiKey)
-)
+var xform = comp(takeNth(3), map(alphaKeys))
 var a = into({}, xform, range(21));
 // a => { ... }
 
 var b = into(Map(), xform, range(70, 100));
 // b => Map( ... )
 
-into(b, map(capsKey), a);
+into(b, mapKeys(caps), a);
 // Map( ... )
 
-into([], a);
+nto([], a);
 // [ [ .. ] ]
 ~~~ 
 

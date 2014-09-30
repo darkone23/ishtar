@@ -276,6 +276,30 @@ function map(fn, coll) {
   }
 }
 
+function mapKeys(fn, coll) {
+  function keyFn(x) {
+    var key = x[0], val = x[1];
+    return [ fn(key), val ];
+  }
+  switch (arguments.length) {
+    case 1: return map(keyFn);
+    case 2: return map(keyFn, coll);
+    default: return nil;
+  }
+}
+
+function mapVals(fn, coll) {
+  function valFn(x) {
+    var key = x[0], val = x[1];
+    return [ key, fn(val) ];
+  }
+  switch (arguments.length) {
+    case 1: return map(valFn);
+    case 2: return map(valFn, coll);
+    default: return nil;
+  }
+}
+
 function filtering(fn) {
   return function(step) {
     return function(result, input) {
@@ -490,6 +514,8 @@ module.exports = {
   get: get,
   set: set,
   getPath: getPath,
+  mapKeys: mapKeys,
+  mapVals: mapVals,
 
   append: initAppend,
 
