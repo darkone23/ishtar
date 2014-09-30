@@ -543,6 +543,20 @@ function getPath(assoc, path, notFound) {
   }
 }
 
+function setPath(assoc, path, val, missing) {
+  var key = first(path), keys = rest(path);
+  if (!satisfies(IAssociative, assoc)) {
+    assoc = exists(missing) ? missing : Map();
+  }
+  if (isEmpty(keys)) {
+    return set(assoc, key, val);
+  } else {
+    var node = get(assoc, key),
+        _missing = empty(assoc);
+    return set(assoc, key, setPath(node, keys, val, _missing));
+  }
+}
+
 module.exports = {
 
   seq: seq,
@@ -555,6 +569,7 @@ module.exports = {
   get: get,
   set: set,
   getPath: getPath,
+  setPath: setPath,
   mapKeys: mapKeys,
   mapVals: mapVals,
 

@@ -35,11 +35,17 @@ describe('mapVals', function() {
   });
 });
 
-
 describe('getPath', function() {
   it('gets nested assocs by a path', function() {
     getPath({a: {b: 23}}, ['a', 'b']).should.eql(23);
     getPath({a: {b: 23}}, ['a', 'z']).should.eql(nil);
     getPath({a: {b: 23}}, ['a', 'b', 'c'], 42).should.eql(42);
+  });
+});
+
+describe('setPath', function() {
+  it('sets nested assocs by a path', function() {
+    setPath({a: {b: 23}}, ['a', 'b'], 42).should.eql({a: {b: 42}});
+    setPath({}, ['a', 'b'], 23).should.eql({a: {b: 23}});
   });
 });
