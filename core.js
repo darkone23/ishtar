@@ -1,4 +1,4 @@
-(function init() {
+(function init(root) {
 "use strict";
 
 var Immutable = require("immutable");
@@ -63,6 +63,10 @@ function complement(fn) {
 
 function identity(x) {
   return x;
+}
+
+function exists(x) {
+  return x != null && x !== nil;
 }
 
 function second(coll) {
@@ -361,6 +365,23 @@ function remove(fn, coll) {
   }
 }
 
+function keeping(step) {
+}
+
+function keep(fn, coll) {
+  // discards non-existy values
+  switch (arguments.length) {
+    case 1: return keeping(fn);
+    case 2:
+      return LazySeq(function thunk() {
+        if (isEmpty(coll)) return coll;
+        var x = fn(first(coll)),
+            ys = keep(fn, rest(coll));
+        return exists(x) ? cons(x, ys) : ys;
+      });
+  }
+}
+
 function concat(a, b) {
   switch (arguments.length) {
     case 0: return LazySeq(function() { return Vector(); });
@@ -522,17 +543,12 @@ function getPath(assoc, path, notFound) {
 }
 
 module.exports = {
-  eq: eq,
-
-  realized: realized,
-
-  unwrap: unwrap,
-  isReduced: isReduced,
 
   seq: seq,
   first: first,
   rest: rest,
   cons: cons,
+  second: second,
 
   has: has,
   get: get,
@@ -542,39 +558,49 @@ module.exports = {
   mapVals: mapVals,
 
   append: initAppend,
+  empty: empty,
 
+  count: count,
+
+  realized: realized,
+  unwrap: unwrap,
+  isReduced: isReduced,
+
+  exists: exists,
+  nil: nil,
+  eq: eq,
   inc: inc,
   dec: dec,
 
-  count: count,
-  empty: empty,
+  // iterating 
+  into: into,
+  collect: collect,
+  each: each,
 
+  // lazy seq xformers
+  map: map,
+  filter: filter,
+  remove: remove,
+  keep: keep,
+  concat: concat,
+  mapcat: mapcat,
   take: take,
   takeWhile: takeWhile,
   takeNth: takeNth,
   drop: drop,
   dropWhile: dropWhile,
-  second: second,
 
-  nil: nil,
-
-  // xform 
-  into: into,
-  collect: collect,
-  each: each,
-  map: map,
-  filter: filter,
-  remove: remove,
-  concat: concat,
-  mapcat: mapcat,
+  // low level xformers
   reduce: reduce,
-  iterate: iterate,
-  exhaust: exhaust,
-  range: range,
-  cycle: cycle,
-
   transduce: transduce,
 
+  // lazy seqs
+  iterate: iterate,
+  range: range,
+  cycle: cycle,
+  exhaust: exhaust,
+
+  // fn fns
   comp: comp,
   juxt: juxt,
   identity: identity,
@@ -601,4 +627,4 @@ module.exports = {
   }
 };
 
-})();
+})(this);

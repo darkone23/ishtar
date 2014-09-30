@@ -184,6 +184,14 @@ describe('dropWhile', function() {
   });
 });
 
+describe('keep', function() {
+  it('is like map, but filtering for existy values', function() {
+    var x = {a: "exists", b: each([]), c: null, d: "only"}
+    var keys = ['a', 'b', 'c', 'd']
+    into([], keep(get.bind(null, x), keys)).should.eql(["exists", "only"]);
+  });
+});
+
 describe('range', function() {
   it('returns a lazy range of numbers', function() {
     var threes = range(0, 100, 3);
