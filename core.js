@@ -73,6 +73,15 @@ function second(coll) {
   return first(rest(coll));
 }
 
+function last(coll) {
+  var x = nil;
+  while(seqable(coll)) {
+    x = first(coll); 
+    coll = rest(coll);
+  }
+  return x;
+}
+
 function isEmpty(coll) {
   return seq(coll) === nil;
 }
@@ -383,6 +392,24 @@ function keep(fn, coll) {
   }
 }
 
+function partition(n, step, coll) {
+  switch (arguments.length) {
+    case 2:
+      coll = arguments[1];
+      return partition(n, n, coll);
+    case 3:
+      return LazySeq(function thunk() {
+        var part = collect(take(n), coll);
+        if (count(part) !== n) {
+          return empty(coll);
+        } else {
+          return cons(part, partition(n, step, drop(step, coll)));
+        }
+      });
+    default: return nil;
+  }
+}
+
 function concat(a, b) {
   switch (arguments.length) {
     case 0: return LazySeq(function() { return Vector(); });
@@ -543,6 +570,23 @@ function getPath(assoc, path, notFound) {
   }
 }
 
+function setEach(assoc, key, val /* key, val... */ ) {
+  var err = new Error("Must call set with key/value pairs");
+  switch (arguments.length) {
+    case 0: throw err;
+    case 1: throw err;
+    case 2: throw err;
+    case 3: return set(assoc, key, val);
+    default:
+      var args = Array.prototype.slice.call(arguments, 1);
+      if (count(args) % 2 !== 0) throw err;
+      return reduce(function(x, y) {
+        var key = first(y), val = second(y);
+        return set(x, key, val);
+      }, assoc, partition(2, args));
+  }
+}
+
 function setPath(assoc, path, val, missing) {
   var key = first(path), keys = rest(path);
   if (!satisfies(IAssociative, assoc)) {
@@ -564,10 +608,11 @@ module.exports = {
   rest: rest,
   cons: cons,
   second: second,
+  last: last,
 
   has: has,
   get: get,
-  set: set,
+  set: setEach,
   getPath: getPath,
   setPath: setPath,
   mapKeys: mapKeys,
@@ -598,6 +643,7 @@ module.exports = {
   filter: filter,
   remove: remove,
   keep: keep,
+  partition: partition,
   concat: concat,
   mapcat: mapcat,
   take: take,

@@ -57,6 +57,14 @@ describe('concat', function() {
   });
 });
 
+describe('partition', function() {
+  it('lazily partitions seqs', function() {
+    into([], partition(2, [ 0, 1, 2, 3 ])).should.eql([ [0, 1], [2, 3] ]);
+    into([], partition(3, [ 0, 1, 2, 3 ])).should.eql([ [0, 1, 2] ]);
+    into([], partition(5, [ 0, 1, 2, 3 ])).should.eql([ ]);
+  });
+});
+
 describe('filter', function() {
   it('filters by a predicate fn', function() {
     function odd(entry) { return entry[1] % 2; }

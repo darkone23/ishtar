@@ -21,6 +21,17 @@ describe('IAssociative', function() {
   });
 });
 
+describe('set', function() {
+  it('accepts many key, val pairs', function() {
+    var a = {};
+    set(a, "a", 1, "b", 2).should.eql({a: 1, b: 2});
+  });
+  it('must be called with an even number extra args', function() {
+    (function() { set({}, 1); }).should.throw();
+    (function() { set({}, 1, 2, 3); }).should.throw();
+  });
+});
+
 describe('mapKeys', function() {
   it('maps over keys', function() {
     var a = {a: 1, b: 2};
