@@ -43,20 +43,20 @@ function caps(key) {
 
 // juxt returns a list built from applying each of the provided fns
 var alphaKey = juxt(alpha, identity);
-// alphaKey(3) => [ 'c', 3 ]
+// alphaKey(3) => [ 'd', 3 ]
 
 // comp lets us compose functions, in this case transducers
-var xform = comp(takeNth(3), map(alphaKeys))
+var xform = comp(takeNth(3), map(alphaKey))
 var a = into({}, xform, range(21));
 // a => { ... }
 
 var b = into(Map(), xform, range(70, 100));
 // b => Map( ... )
 
-into(b, mapKeys(caps), a);
-// Map( ... )
+into(a, mapKeys(caps), a);
+// { ... }
 
-nto([], a);
+into([], b);
 // [ [ .. ] ]
 ~~~ 
 

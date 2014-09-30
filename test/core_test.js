@@ -105,7 +105,6 @@ describe('juxt', function() {
   });
 });
 
-
 describe('each', function() {
   it('sequentially invokes fn', function() {
      var x = 0;

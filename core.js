@@ -61,6 +61,10 @@ function complement(fn) {
   };
 }
 
+function identity(x) {
+  return x;
+}
+
 function second(coll) {
   return first(rest(coll));
 }
@@ -573,6 +577,7 @@ module.exports = {
 
   comp: comp,
   juxt: juxt,
+  identity: identity,
 
   // data structures
   Reduced: Reduced,
