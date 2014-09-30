@@ -365,7 +365,8 @@ function remove(fn, coll) {
   }
 }
 
-function keeping(step) {
+function keeping(fn) {
+  return comp(map(fn), filter(exists));
 }
 
 function keep(fn, coll) {

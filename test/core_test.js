@@ -190,6 +190,11 @@ describe('keep', function() {
     var keys = ['a', 'b', 'c', 'd']
     into([], keep(get.bind(null, x), keys)).should.eql(["exists", "only"]);
   });
+  it('works as a transducer', function() {
+    var x = {a: "exists", b: each([]), c: null, d: "only"}
+    var keys = ['a', 'b', 'c', 'd']
+    into([], keep(get.bind(null, x)), keys).should.eql(["exists", "only"]);
+  });
 });
 
 describe('range', function() {
