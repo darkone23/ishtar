@@ -218,8 +218,8 @@ describe('zip', function() {
     into([], zip([1],[2],[3])).should.eql([[1,2,3]]);
     into([], zip([1,'a'], [2,'b'], [3,'c'])).should.eql([[1,2,3], ['a','b','c']]);
     into([], zip([0, 0, 0], ['a', 'b'], {a: 0, b: 0, c: 0}))
-      .should.eql([ [ 0, 'a', ['a', 0] ],
-                    [ 0, 'b', ['b', 0] ] ]);
+      .should.eql([ [ 0, 'a', MapEntry('a', 0) ],
+                    [ 0, 'b', MapEntry('b', 0) ] ]);
   });
 });
 

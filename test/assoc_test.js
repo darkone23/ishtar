@@ -21,6 +21,24 @@ describe('IAssociative', function() {
   });
 });
 
+describe('MapEntry', function() {
+  it('looks like an array', function() {
+    var x = MapEntry('a', 1);
+    x[0].should.eql('a');
+    x[1].should.eql(1);
+  });
+  it('looks like a seq', function() {
+    var x = MapEntry('a', 1);
+    first(x).should.eql('a');
+    second(x).should.eql(1);
+  });
+  it('looks like a k/v entry', function() {
+    var x = MapEntry('a', 1);
+    x.key.should.eql('a');
+    x.val.should.eql(1);
+  });
+});
+
 describe('set', function() {
   it('accepts many key, val pairs', function() {
     var a = {};

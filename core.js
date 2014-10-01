@@ -15,6 +15,7 @@ var collections = require("./lib/collections"),
     Map = collections.Map,
     Vector = collections.Vector,
     Set = collections.Set,
+    MapEntry = collections.MapEntry,
     LazySeq = collections.LazySeq;
 
 var reduced = require("./lib/reduced"),
@@ -353,8 +354,7 @@ function zipMap(keys, vals) {
 
 function mapKeys(fn, coll) {
   function keyFn(x) {
-    var key = first(x), val = second(x);
-    return [ fn(key), val ];
+    return MapEntry(fn(x.key), x.val);
   }
   switch (arguments.length) {
     case 1: return map(keyFn);
@@ -365,8 +365,7 @@ function mapKeys(fn, coll) {
 
 function mapVals(fn, coll) {
   function valFn(x) {
-    var key = first(x), val = second(x);
-    return [ key, fn(val) ];
+    return MapEntry(x.key, fn(x.val));
   }
   switch (arguments.length) {
     case 1: return map(valFn);
@@ -715,6 +714,7 @@ module.exports = {
   Reduced: Reduced,
   LazySeq: LazySeq,
   Map: Immutable.Map,
+  MapEntry: MapEntry,
   Vector: Immutable.Vector,
   Range: Immutable.Range,
   Set: Immutable.Set,
