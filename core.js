@@ -302,7 +302,7 @@ function map(fn, coll) {
   switch (arguments.length) {
     case 1: return mapping(fn);
     case 2:
-      if (seqable(coll)) { 
+      if (seqable(coll) && rest(coll)) { 
         return LazySeq(function() {
           return cons(fn(first(coll)), map(fn, rest(coll)));
         });
@@ -311,6 +311,12 @@ function map(fn, coll) {
       }
     default: return nil;
   }
+}
+
+function keys(assoc) {
+  var getKey = function getKey(x) { return [x[0]]; },
+      keys = mapcat(getKey);
+  return transduce(keys, append, [], assoc);
 }
 
 function mapKeys(fn, coll) {
@@ -615,6 +621,7 @@ module.exports = {
   set: setEach,
   getPath: getPath,
   setPath: setPath,
+  keys: keys,
   mapKeys: mapKeys,
   mapVals: mapVals,
 

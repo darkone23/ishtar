@@ -60,3 +60,9 @@ describe('setPath', function() {
     setPath({}, ['a', 'b'], 23).should.eql({a: {b: 23}});
   });
 });
+
+describe('keys', function() {
+  it('returns the keys', function() {
+    into([], keys({a: 1, b: 2})).should.eql(['a','b']);
+  });
+});
