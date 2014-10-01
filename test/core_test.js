@@ -299,3 +299,12 @@ describe('cycle', function () {
     eq(take(12, cycled), Vector(1,2,3,1,2,3,1,2,3,1,2,3)).should.be.true;
   });
 });
+
+describe('constantly', function () {
+  it('takes a value and returns a function that returns the same value with any arguments', function () {
+    var awesomeFunc = constantly(4);
+    awesomeFunc(1,2,3).should.eql(4);
+    awesomeFunc(undefined).should.eql(4);
+    into([], map(awesomeFunc, [1,2,3])).should.eql([4,4,4]);
+  });
+});

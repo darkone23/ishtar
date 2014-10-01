@@ -65,6 +65,12 @@ function identity(x) {
   return x;
 }
 
+function constantly(x) {
+  return function () {
+    return x;
+  };
+}
+
 function exists(x) {
   return x != null && x !== nil;
 }
@@ -680,6 +686,7 @@ module.exports = {
   comp: comp,
   juxt: juxt,
   identity: identity,
+  constantly: constantly,
 
   // data structures
   Reduced: Reduced,
