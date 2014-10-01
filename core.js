@@ -640,6 +640,9 @@ function setPath(assoc, path, val, missing) {
 
 module.exports = {
 
+  seqable: seqable,
+  isEmpty: isEmpty,
+
   seq: seq,
   first: first,
   rest: rest,
