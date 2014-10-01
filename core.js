@@ -320,20 +320,16 @@ function map(fn, coll) {
 }
 
 function keys(assoc) {
-  var getKey = function getKey(x) { return [x[0]]; },
-      keys = mapcat(getKey);
-  return transduce(keys, append, [], assoc);
+  return into([], map(first), assoc);
 }
 
 function vals(assoc) {
-  var getValue = function getKey(x) { return [x[1]]; },
-      values = mapcat(getValue);
-  return transduce(values, append, [], assoc);
+  return into([], map(second), assoc);
 }
 
 function mapKeys(fn, coll) {
   function keyFn(x) {
-    var key = x[0], val = x[1];
+    var key = first(x), val = second(x);
     return [ fn(key), val ];
   }
   switch (arguments.length) {
@@ -345,7 +341,7 @@ function mapKeys(fn, coll) {
 
 function mapVals(fn, coll) {
   function valFn(x) {
-    var key = x[0], val = x[1];
+    var key = first(x), val = second(x);
     return [ key, fn(val) ];
   }
   switch (arguments.length) {

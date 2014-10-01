@@ -63,12 +63,12 @@ describe('setPath', function() {
 
 describe('keys', function() {
   it('returns the keys from the map', function() {
-    into([], keys({a: 1, b: 2})).should.eql(['a','b']);
+    keys({a: 1, b: 2}).should.eql(['a','b']);
   });
 });
 
 describe('vals', function() {
   it('returns the values from the map', function() {
-    into([], vals({a: 1, b: 2})).should.eql([1, 2]);
+    vals({a: 1, b: 2}).should.eql([1, 2]);
   });
 });
