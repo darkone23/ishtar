@@ -308,7 +308,7 @@ function map(fn, coll) {
   switch (arguments.length) {
     case 1: return mapping(fn);
     case 2:
-      if (seqable(coll) && rest(coll)) { 
+      if (seqable(coll)) { 
         return LazySeq(function() {
           return cons(fn(first(coll)), map(fn, rest(coll)));
         });
