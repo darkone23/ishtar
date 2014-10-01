@@ -15,7 +15,7 @@ describe('map', function() {
   it('works on objects', function() {
     var obj = {a: 1, b: 2, c: 3};
     var mapped = map(function(x) {
-      return [ x[0], x[1] + 1 ];
+      return [ first(x), second(x) + 1 ];
     }, obj);
     into({}, mapped).should.eql({a:2, b:3, c:4});
     obj.should.eql({a:1, b:2, c:3});
@@ -33,7 +33,7 @@ describe('map', function() {
 
   it('works on Maps', function() {
     var mapped = map(function(entry) {
-      var key = entry[0], val = entry[1];
+      var key = first(entry), val = second(entry)
       return [ key, val + 1 ];
     }, Map({a: 1, b: 2, c: 3}));
     eq(into(Map(), mapped), Map({a: 2, b: 3, c: 4})).should.be.true;
