@@ -75,6 +75,12 @@ function exists(x) {
   return x != null && x !== nil;
 }
 
+function forall(fn, coll) {
+  return reduce(function(bool, el) {
+    return fn(el) || Reduced(false);
+  }, true, coll);
+}
+
 function second(coll) {
   return first(rest(coll));
 }
@@ -319,12 +325,30 @@ function map(fn, coll) {
   }
 }
 
+function zip(a, b /* c... */) {
+  var args = Array.prototype.slice.call(arguments);
+  return LazySeq(function thunk() {
+    var e = empty(a);
+    if (forall(seqable, args)) {
+      var xs = into(e, map(first, args));
+      var ys = zip.apply(null, into([], map(rest, args)));
+      return cons(xs, ys);
+    } else {
+      return e;
+    }
+  });
+}
+
 function keys(assoc) {
   return into([], map(first), assoc);
 }
 
 function vals(assoc) {
   return into([], map(second), assoc);
+}
+
+function zipMap(keys, vals) {
+  return into(Map(), zip(keys, vals));
 }
 
 function mapKeys(fn, coll) {
@@ -633,6 +657,7 @@ module.exports = {
   vals: vals,
   mapKeys: mapKeys,
   mapVals: mapVals,
+  zipMap: zipMap,
 
   append: initAppend,
   empty: empty,
@@ -667,6 +692,7 @@ module.exports = {
   takeNth: takeNth,
   drop: drop,
   dropWhile: dropWhile,
+  zip: zip,
 
   // low level xformers
   reduce: reduce,
@@ -683,6 +709,7 @@ module.exports = {
   juxt: juxt,
   identity: identity,
   constantly: constantly,
+  forall: forall,
 
   // data structures
   Reduced: Reduced,

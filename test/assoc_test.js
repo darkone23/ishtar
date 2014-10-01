@@ -72,3 +72,10 @@ describe('vals', function() {
     vals({a: 1, b: 2}).should.eql([1, 2]);
   });
 });
+
+describe('zipMap', function() {
+  it('zips keys and vals into a Map', function() {
+    var x = {a: 1, b: 2};
+    into({}, zipMap(vals(x), keys(x))).should.eql({1: "a", 2: "b"});
+  });
+});
