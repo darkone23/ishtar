@@ -319,6 +319,12 @@ function keys(assoc) {
   return transduce(keys, append, [], assoc);
 }
 
+function vals(assoc) {
+  var getValue = function getKey(x) { return [x[1]]; },
+      values = mapcat(getValue);
+  return transduce(values, append, [], assoc);
+}
+
 function mapKeys(fn, coll) {
   function keyFn(x) {
     var key = x[0], val = x[1];
@@ -622,6 +628,7 @@ module.exports = {
   getPath: getPath,
   setPath: setPath,
   keys: keys,
+  vals: vals,
   mapKeys: mapKeys,
   mapVals: mapVals,
 
