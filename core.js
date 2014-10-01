@@ -130,10 +130,10 @@ function comp(f, g /* fns... */) {
 function juxt(f, g /* fns... */ ) {
   switch (arguments.length) {
     case 0: return nil;
-    case 1: return function() { return [ f.apply(null, arguments) ]; };
+    case 1: return function() { return Vector( f.apply(null, arguments) ); };
     case 2:
       return function() {
-        return [ f.apply(null, arguments), g.apply(null, arguments) ];
+        return Vector( f.apply(null, arguments), g.apply(null, arguments) );
       };
     default:
       var fns = arguments;
@@ -141,7 +141,7 @@ function juxt(f, g /* fns... */ ) {
         var args = arguments;
         return reduce(function(results, fn) {
           return append(results, fn.apply(null, args));
-        }, [], Array.prototype.slice.call(fns));
+        }, Vector(), Array.prototype.slice.call(fns));
       };
   }
 }
@@ -341,11 +341,11 @@ function zip(a, b /* c... */) {
 }
 
 function keys(assoc) {
-  return into([], map(first), assoc);
+  return into(Vector(), map(first), assoc);
 }
 
 function vals(assoc) {
-  return into([], map(second), assoc);
+  return into(Vector(), map(second), assoc);
 }
 
 function zipMap(keys, vals) {

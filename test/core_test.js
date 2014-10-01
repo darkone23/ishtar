@@ -117,7 +117,7 @@ describe('juxt', function() {
      var mod = function(x, y) { return x % y };
      var add = function(x, y) { return x + y };
      var sub = function(x, y) { return x - y };
-     juxt(div, mod, add, sub)(50, 100).should.eql([0.5, 50, 150, -50]);
+     juxt(div, mod, add, sub)(50, 100).toArray().should.eql([0.5, 50, 150, -50]);
   });
 });
 
