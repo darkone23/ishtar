@@ -319,10 +319,8 @@ function map(fn, coll) {
         return LazySeq(function() {
           return cons(fn(first(coll)), map(fn, rest(coll)));
         });
-      } else {
-        return coll;
       }
-    default: return nil;
+    return nil;
   }
 }
 
