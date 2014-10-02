@@ -161,9 +161,9 @@ describe('reduce', function() {
 
 describe('take', function() {
   it('takes from seqs', function() {
-    take(0, range()).should.eql(Vector());
-    take(3, [0,1,2,3,4,5]).should.eql([0,1,2]);
-    take(10, [0,1,2,3,4,5]).should.eql([0,1,2,3,4,5]);
+    into(Vector(), take(0, range())).should.eql(Vector());
+    into([], take(3, [0,1,2,3,4,5])).should.eql([0,1,2]);
+    into([], take(10, [0,1,2,3,4,5])).should.eql([0,1,2,3,4,5]);
   });
   it('works as a transducer', function() {
     into([], take(3), [1,2,3,4,5]).should.eql([1,2,3]);

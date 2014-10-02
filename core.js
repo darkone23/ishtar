@@ -152,15 +152,15 @@ function taking(n) {
     var iter = n;
     return function(result, input) {
       switch (arguments.length) {
-	case 0: return step();
-	case 1: return step(result);
-	case 2:
-	  var curr = iter;
-	  var next = --iter;
-	  if (curr > 0) result = step(result, input);
-	  if (next === 0) result = Reduced(result);
-	  return result;
-	default: return nil;
+	      case 0: return step();
+	      case 1: return step(result);
+	      case 2:
+	        var curr = iter;
+	        var next = --iter;
+	        if (curr > 0) result = step(result, input);
+	        if (next === 0) result = Reduced(result);
+	        return result;
+        default: return nil;
       }
     };
   };
@@ -171,10 +171,11 @@ function take(n, coll) {
     case 1: return taking(n);
     case 2:
       if (n > 0 && seqable(coll)) {
-	return cons(first(coll), take(n-1, rest(coll)));
-      } else {
-	return empty(coll);
+        return LazySeq(function thunk() {
+          return cons(first(coll), take(n-1, rest(coll)));
+        });
       }
+      return nil;
   }
 }
 
