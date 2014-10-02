@@ -89,7 +89,7 @@ describe('remove', function() {
 
 describe('forall', function() {
   it('says whether a predicate holds for all', function() {
-    function even(x) { return x % 2 === 0 };
+    function even(x) { return x % 2 === 0 }
     forall(even, range(10)).should.be.false;
     forall(even, range(0, 10, 2)).should.be.true;
   });
@@ -161,7 +161,7 @@ describe('reduce', function() {
 
 describe('take', function() {
   it('takes from seqs', function() {
-    take(0, range()).should.eql(Vector());;
+    take(0, range()).should.eql(Vector());
     take(3, [0,1,2,3,4,5]).should.eql([0,1,2]);
     take(10, [0,1,2,3,4,5]).should.eql([0,1,2,3,4,5]);
   });
@@ -262,7 +262,7 @@ describe('mapcat', function() {
   it('transduces by reducing', function() {
     var pair = function(x) { return [ x, x ]; };
     var repeating = mapcat(pair);
-    transduce(repeating, append, [], [1,2,3]).should.eql([1,1,2,2,3,3]);;
+    transduce(repeating, append, [], [1,2,3]).should.eql([1,1,2,2,3,3]);
   });
   it('can escape from infinite lists', function() {
     var expected = 4, counter = 0;

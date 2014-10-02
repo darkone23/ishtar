@@ -11,7 +11,7 @@ gulp.task('dist', function() {
       output: {
         library: "Ishtar",
         filename: "ishtar-" + package.version + ".js"
-      },
+      }
      }))
     .pipe(gulp.dest('dist/'));
 });
