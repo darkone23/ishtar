@@ -1,7 +1,7 @@
 var assert = require("assert");
 var should = require('should');
 
-var ishtar = require("../core");
+var ishtar = require("../ishtar");
 ishtar.exports(global);
 
 describe('protocols', function(){

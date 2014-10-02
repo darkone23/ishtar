@@ -44,7 +44,7 @@ console.log("immutable-js:", (imend - imstart) + "ms");
 /* =============================
 I S H T A R ====================
 ============================= */
-var ishtar = require("../core");
+var ishtar = require("../ishtar");
 var istart = new Date();
 ishtar.collect(ishtar.comp(
   ishtar.map(dec),

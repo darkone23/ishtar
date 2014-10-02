@@ -3,26 +3,26 @@
 
 var Immutable = require("immutable");
 
-var nil = require("./lib/nil");
+var nil = require("./nil");
 
-var dispatch = require("./lib/dispatch"),
+var dispatch = require("./dispatch"),
     defprotocol = dispatch.defprotocol,
     self = dispatch.self,
     extend = dispatch.extend,
     satisfies = dispatch.satisfies;
 
-var collections = require("./lib/collections"),
+var collections = require("./collections"),
     Map = collections.Map,
     Vector = collections.Vector,
     Set = collections.Set,
     MapEntry = collections.MapEntry,
     LazySeq = collections.LazySeq;
 
-var reduced = require("./lib/reduced"),
+var reduced = require("./reduced"),
     Reduced = reduced.Reduced,
     isReduced = reduced.isReduced;
 
-var protocols = require("./lib/protocols"),
+var protocols = require("./protocols"),
     ISeq = protocols.ISeq,
     IPending = protocols.IPending,
     IAppend = protocols.IAppend,
@@ -128,6 +128,13 @@ function comp(f, g /* fns... */) {
     case 2: return function() { return f(g.apply(null, arguments)); };
     default: return reduce(comp, Array.prototype.slice.call(arguments));
   }
+}
+
+function partial(fn /* args... */) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return function() {
+    return fn.apply(null, args.concat(Array.prototype.slice.call(arguments)));
+  };
 }
 
 function juxt(f, g /* fns... */ ) {
@@ -712,6 +719,7 @@ module.exports = {
 
   // fn fns
   comp: comp,
+  partial: partial,
   juxt: juxt,
   identity: identity,
   constantly: constantly,

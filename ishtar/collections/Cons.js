@@ -20,7 +20,7 @@ extend(Cons, IAppend, {
 });
 
 extend(Cons, ICountable, {
-  count: function(coll) { return 1 + ICountable.count(coll.coll) }
+  count: function(coll) { return 1 + ICountable.count(coll.coll); }
 });
 
 function Cons(el, coll) {
@@ -33,7 +33,7 @@ function Cons(el, coll) {
 var $Cons = Cons;
 Cons.prototype.toString = function() {
   var sequence = (this.coll === nil) ? "nil" : "rest...";
-  return "cons " + this.el + " ∘ " + sequence;
+  return "cons " + this.el + " | " + sequence;
 };
 Cons.prototype.inspect = Cons.prototype.toString;
 

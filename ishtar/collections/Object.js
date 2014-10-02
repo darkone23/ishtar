@@ -1,4 +1,5 @@
 var dispatch = require("../dispatch"),
+    satisfies = dispatch.satisfies,
     extend = dispatch.extend;
 
 var protocols = require("../protocols"),
@@ -28,9 +29,12 @@ extend(Object, ISeq, {
     return clone(coll, 1);
   },
   cons: function(el, coll) {
-    if (ICountable.count(el) !== 2) throw new Error("Cannot cons value onto Object without key: " + el);
-    var key = ISeq.first(el), val = ISeq.first(ISeq.rest(el));
-    return IAssociative.set(coll, key, val);
+    if (satisfies(ICountable, el) && ICountable.count(el) === 2) {
+      var key = ISeq.first(el), val = ISeq.first(ISeq.rest(el));
+      return IAssociative.set(coll, key, val);
+    } else {
+      throw new Error("Can only cons a [ k : v ] pair onto an Object, not: " + el);
+    }
   }
 });
 

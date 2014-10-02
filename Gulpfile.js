@@ -6,7 +6,7 @@ var jshint = require('gulp-jshint');
 var package = require('./package.json');
 
 gulp.task('dist', function() {
-  return gulp.src('core.js')
+  return gulp.src('./ishtar/index.js')
     .pipe(webpack({
       output: {
         library: "Ishtar",
@@ -19,8 +19,7 @@ gulp.task('dist', function() {
 gulp.task('lint', function() {
   return gulp.src([
       'Gulpfile.js',
-      'core.js',
-      'lib/*.js'
+      'ishtar/**/*.js'
     ])
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));

@@ -13,7 +13,7 @@ grab the latest copy of ishtar (not published yet, so pull from github)
 ~~~sh
 git clone https://github.com/eggsby/ishtar
 cd ishtar; npm install --production; node
-require("./core").exports(global)
+require("./ishtar").exports(global);
 // >
 ~~~
 

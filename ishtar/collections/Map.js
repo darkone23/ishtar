@@ -2,6 +2,7 @@ var Immutable = require("immutable"),
     Map = Immutable.Map;
 
 var dispatch = require("../dispatch"),
+    satisfies = dispatch.satisfies,
     extend = dispatch.extend;
 
 var protocols = require("../protocols"),
@@ -29,8 +30,11 @@ extend(Map, ISeq, {
     return Map();
   },
   cons: function(el, coll) {
-    if (ICountable.count(el) !== 2) throw new Error("Cannot cons value onto Map without key: " + el);
-    return coll.set(ISeq.first(el), ISeq.first(ISeq.rest(el)));
+    if (satisfies(ICountable, el) && ICountable.count(el) === 2) {
+      return coll.set(ISeq.first(el), ISeq.first(ISeq.rest(el)));
+    } else {
+      throw new Error("Can only cons a [ k : v ] pair onto a Map, not " + el);
+    }
   }
 });
 
