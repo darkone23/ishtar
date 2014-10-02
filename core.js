@@ -76,42 +76,40 @@ function exists(x) {
   return x != null && x !== nil;
 }
 
-function forall(fn, coll) {
+function forall(fn, seq) {
   return reduce(function(bool, el) {
     return fn(el) || Reduced(false);
-  }, true, coll);
+  }, true, seq);
 }
 
-function nth(n, coll) {
-  coll = drop(n, coll);
-  return seqable(coll) ? first(coll) : nil;
+function nth(n, seq) {
+  seq = drop(n, seq);
+  return seqable(seq) ? first(seq) : nil;
 }
 
-function second(coll) {
-  return nth(1, coll);
+function second(seq) {
+  return nth(1, seq);
 }
 
-function last(coll) {
+function last(seq) {
   var x = nil;
-  while(seqable(coll)) {
-    x = first(coll); 
-    coll = rest(coll);
+  while(seqable(seq)) {
+    x = first(seq); 
+    seq = rest(seq);
   }
   return x;
 }
 
-function isEmpty(coll) {
-  return seq(coll) === nil;
+function seqable(seq) {
+  return ISeq.seq(seq) !== nil;
 }
 
-function seqable(coll) {
-  return seq(coll) !== nil;
-}
+var isEmpty = complement(seqable);
 
-function each(coll, fn) {
-  while (seqable(coll)) {
-    fn.call(null, first(coll));
-    coll = rest(coll);
+function each(seq, fn) {
+  while (seqable(seq)) {
+    fn.call(null, first(seq));
+    seq = rest(seq);
   }
   return nil;
 }
@@ -156,27 +154,27 @@ function taking(n) {
     var iter = n;
     return function(result, input) {
       switch (arguments.length) {
-	      case 0: return step();
-	      case 1: return step(result);
-	      case 2:
-	        var curr = iter;
-	        var next = --iter;
-	        if (curr > 0) result = step(result, input);
-	        if (next === 0) result = Reduced(result);
-	        return result;
-        default: return nil;
-      }
+        case 0: return step();
+        case 1: return step(result);
+        case 2:
+          var curr = iter;
+          var next = --iter;
+          if (curr > 0) result = step(result, input);
+          if (next === 0) result = Reduced(result);
+          return result;
+          default: return nil;
+        }
     };
   };
 }
 
-function take(n, coll) {
+function take(n, seq) {
   switch (arguments.length) {
     case 1: return taking(n);
     case 2:
-      if (n > 0 && seqable(coll)) {
+      if (n > 0 && seqable(seq)) {
         return LazySeq(function thunk() {
-          return cons(first(coll), take(n-1, rest(coll)));
+          return cons(first(seq), take(n-1, rest(seq)));
         });
       }
       return nil;
@@ -200,13 +198,13 @@ function takingNth(n) {
   };
 }
 
-function takeNth(n, coll) {
+function takeNth(n, seq) {
   switch (arguments.length) {
     case 1: return takingNth(n);
     case 2: 
-      if(n > 0 && seqable(coll)) {
+      if(n > 0 && seqable(seq)) {
         return LazySeq(function () {
-            return cons(first(seq(coll)), takeNth(n, drop(n, seq(coll))));
+            return cons(first(seq), takeNth(n, drop(n, seq)));
         });
       }
       return nil;
@@ -227,15 +225,15 @@ function dropping(n) {
   };
 }
 
-function drop(n, coll) {
+function drop(n, seq) {
   switch (arguments.length) {
     case 1: return dropping(n);
     case 2:
-      while (n > 0 && seqable(coll)) {
-        coll = rest(coll);
+      while (n > 0 && seqable(seq)) {
+        seq = rest(seq);
         n -= 1;
       }
-      return coll;
+      return seq;
   }
 }
 
@@ -257,16 +255,16 @@ function droppingWhile(pred) {
   };
 }
 
-function dropWhile(pred, coll) {
+function dropWhile(pred, seq) {
   switch (arguments.length) {
     case 1: return droppingWhile(pred);
     case 2: 
-      if(seqable(coll)) {
-        var next = first(coll);
+      if(seqable(seq)) {
+        var next = first(seq);
         if (pred(next)) {
-          return dropWhile(pred, rest(coll));
+          return dropWhile(pred, rest(seq));
         }
-        return coll;
+        return seq;
       }
       return nil;
   }
@@ -290,13 +288,13 @@ function takingWhile(pred) {
   };
 }
 
-function takeWhile(pred, coll) {
+function takeWhile(pred, seq) {
   switch(arguments.length) {
     case 1: return takingWhile(pred);
     case 2: 
-      if(seqable(coll)) {
-        var next = first(coll);
-        if (pred(next)) return cons(next, takeWhile(pred, rest(coll)));
+      if(seqable(seq)) {
+        var next = first(seq);
+        if (pred(next)) return cons(next, takeWhile(pred, rest(seq)));
       }
       return nil;
   }
@@ -315,14 +313,14 @@ function mapping(fn) {
   };
 }
 
-function map(fn, coll) {
+function map(fn, seq) {
   // Map a function over a collection.
   switch (arguments.length) {
     case 1: return mapping(fn);
     case 2:
-      if (seqable(coll)) { 
+      if (seqable(seq)) { 
         return LazySeq(function() {
-          return cons(fn(first(coll)), map(fn, rest(coll)));
+          return cons(fn(first(seq)), map(fn, rest(seq)));
         });
       }
     return nil;
@@ -355,24 +353,24 @@ function zipMap(keys, vals) {
   return into(Map(), zip(keys, vals));
 }
 
-function mapKeys(fn, coll) {
+function mapKeys(fn, seq) {
   function keyFn(x) {
     return MapEntry(fn(first(x)), second(x));
   }
   switch (arguments.length) {
     case 1: return map(keyFn);
-    case 2: return map(keyFn, coll);
+    case 2: return map(keyFn, seq);
     default: return nil;
   }
 }
 
-function mapVals(fn, coll) {
+function mapVals(fn, seq) {
   function valFn(x) {
     return MapEntry(first(x), fn(second(x)));
   }
   switch (arguments.length) {
     case 1: return map(valFn);
-    case 2: return map(valFn, coll);
+    case 2: return map(valFn, seq);
     default: return nil;
   }
 }
@@ -390,14 +388,14 @@ function filtering(fn) {
   };
 }
 
-function filter(fn, coll) {
+function filter(fn, seq) {
   switch (arguments.length) {
     case 1: return filtering(fn);
     case 2:
-      if (seqable(coll)) { 
+      if (seqable(seq)) { 
         return LazySeq(function() {
-          var fst = first(coll),
-              rst = filter(fn, rest(coll));
+          var fst = first(seq),
+              rst = filter(fn, rest(seq));
           return fn(fst) ? cons(fst, rst) : rst;
         });
       }
@@ -405,10 +403,10 @@ function filter(fn, coll) {
   }
 }
 
-function remove(fn, coll) {
+function remove(fn, seq) {
   switch (arguments.length) {
     case 1: return filter(complement(fn));
-    case 2: return filter(complement(fn), coll);
+    case 2: return filter(complement(fn), seq);
   }
 }
 
@@ -416,32 +414,32 @@ function keeping(fn) {
   return comp(map(fn), filter(exists));
 }
 
-function keep(fn, coll) {
+function keep(fn, seq) {
   // discards non-existy values
   switch (arguments.length) {
     case 1: return keeping(fn);
     case 2:
       return LazySeq(function thunk() {
-        if (isEmpty(coll)) return nil;
-        var x = fn(first(coll)),
-            ys = keep(fn, rest(coll));
+        if (isEmpty(seq)) return nil;
+        var x = fn(first(seq)),
+            ys = keep(fn, rest(seq));
         return exists(x) ? cons(x, ys) : ys;
       });
   }
 }
 
-function partition(n, step, coll) {
+function partition(n, step, seq) {
   switch (arguments.length) {
     case 2:
-      coll = arguments[1];
-      return partition(n, n, coll);
+      seq = arguments[1];
+      return partition(n, n, seq);
     case 3:
       return LazySeq(function thunk() {
-        var part = collect(take(n), coll);
+        var part = collect(take(n), seq);
         if (count(part) !== n) {
-          return empty(coll);
+          return empty(seq);
         } else {
-          return cons(part, partition(n, step, drop(step, coll)));
+          return cons(part, partition(n, step, drop(step, seq)));
         }
       });
     default: return nil;
@@ -487,19 +485,19 @@ function mapcat(fn) {
   return comp(map(fn), cat);
 }
 
-function reduce(fn, init, coll) {
+function reduce(fn, init, seq) {
   // reduces sequences
   switch (arguments.length) {
-    case 2: // init not supplied, coll is second arg
-      coll = arguments[1]; 
-      return seqable(coll) ? reduce(fn, first(coll), rest(coll)) : fn();
+    case 2: // init not supplied, seq is second arg
+      seq = arguments[1]; 
+      return seqable(seq) ? reduce(fn, first(seq), rest(seq)) : fn();
     case 3:
-      if (seqable(coll)) {
+      if (seqable(seq)) {
         var result = init;
-        while(seqable(coll)) {
-          result = fn(result, first(coll));
+        while(seqable(seq)) {
+          result = fn(result, first(seq));
           if (isReduced(result)) return unwrap(result);
-          coll = rest(coll);
+          seq = rest(seq);
         }
         return result;
       }
@@ -508,13 +506,13 @@ function reduce(fn, init, coll) {
   }
 }
 
-function transduce(xform, step, init, coll) {
+function transduce(xform, step, init, seq) {
   switch (arguments.length) {
-    case 3: // no init supplied, coll as third arg
-      coll = arguments[2];
-      return reduce(xform(step), step(), coll);
+    case 3: // no init supplied, seq as third arg
+      seq = arguments[2];
+      return reduce(xform(step), step(), seq);
     case 4:
-      return reduce(xform(step), init, coll);
+      return reduce(xform(step), init, seq);
     default: return nil;
   }
 }
@@ -531,13 +529,13 @@ function into(to, xform, from) {
   }
 }
 
-function collect(xform, coll) {
+function collect(xform, seq) {
   switch (arguments.length) {
-    case 1: // no xform supplied, coll as first arg
-      coll = arguments[0];
-      return into(empty(coll), coll);
+    case 1: // no xform supplied, seq as first arg
+      seq = arguments[0];
+      return into(empty(seq), seq);
     case 2:
-      return into(empty(coll), xform, coll);
+      return into(empty(seq), xform, seq);
   }
 }
 
@@ -548,9 +546,9 @@ function initAppend() {
    }
 }
 
-function exhaust(coll) {
+function exhaust(seq) {
   // used when a lazy sequence is meant to side effect when running
-  while(seqable(coll)) coll = rest(coll);
+  while(seqable(seq)) seq = rest(seq);
   return nil;
 }
 
@@ -561,10 +559,10 @@ function iterate(fn, x) {
   }));
 }
 
-function cycle(coll) {
-  if (seqable(coll)) {
+function cycle(seq) {
+  if (seqable(seq)) {
     return LazySeq(function () {
-      return concat(seq(coll), cycle(seq(coll)));
+      return concat(seq, cycle(seq));
     });
   }
   return nil;
@@ -583,10 +581,10 @@ function range(start, end, step) {
       if (step < 0) compare = function(x, end) { return x > end; };
       if (compare(start, end)) {
         return cons(start, LazySeq(function() {
-	  return range(start + step, end, step);
-	}));
+          return range(start + step, end, step);
+        }));
       } else {
-	return nil;
+        return nil;
       }
   }
 }
