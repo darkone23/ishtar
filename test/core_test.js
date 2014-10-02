@@ -33,7 +33,7 @@ describe('map', function() {
 
   it('works on Maps', function() {
     var mapped = map(function(entry) {
-      var key = first(entry), val = second(entry)
+      var key = first(entry), val = second(entry);
       return [ key, val + 1 ];
     }, Map({a: 1, b: 2, c: 3}));
     eq(into(Map(), mapped), Map({a: 2, b: 3, c: 4})).should.be.true;
@@ -202,13 +202,13 @@ describe('dropWhile', function() {
 
 describe('keep', function() {
   it('is like map, but filtering for existy values', function() {
-    var x = {a: "exists", b: each([]), c: null, d: "only", e: void 23}
-    var keys = ['a', 'b', 'c', 'd']
+    var x = {a: "exists", b: each([]), c: null, d: "only", e: void 23};
+    var keys = ['a', 'b', 'c', 'd'];
     into([], keep(get.bind(null, x), keys)).should.eql(["exists", "only"]);
   });
   it('works as a transducer', function() {
-    var x = {a: "exists", b: each([]), c: null, d: "only", e: void 23}
-    var keys = ['a', 'b', 'c', 'd']
+    var x = {a: "exists", b: each([]), c: null, d: "only", e: void 23};
+    var keys = ['a', 'b', 'c', 'd'];
     into([], keep(get.bind(null, x)), keys).should.eql(["exists", "only"]);
   });
 });
