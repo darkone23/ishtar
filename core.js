@@ -146,7 +146,6 @@ function juxt(f, g /* fns... */ ) {
   }
 }
 
-
 function taking(n) {
  return function(step) {
     var iter = n;
@@ -205,7 +204,7 @@ function takeNth(n, coll) {
             return cons(first(seq(coll)), takeNth(n, drop(n, seq(coll))));
         });
       }
-      return empty(coll);
+      return nil;
   }
 }
 
@@ -264,7 +263,7 @@ function dropWhile(pred, coll) {
         }
         return coll;
       }
-      return empty(coll);
+      return nil;
   }
 }
 
@@ -294,7 +293,7 @@ function takeWhile(pred, coll) {
         var next = first(coll);
         if (pred(next)) return cons(next, takeWhile(pred, rest(coll)));
       }
-      return empty(coll);
+      return nil;
   }
 }
 
@@ -396,8 +395,6 @@ function filter(fn, coll) {
               rst = filter(fn, rest(coll));
           return fn(fst) ? cons(fst, rst) : rst;
         });
-      } else {
-        return coll;
       }
     default: return nil;
   }
@@ -420,7 +417,7 @@ function keep(fn, coll) {
     case 1: return keeping(fn);
     case 2:
       return LazySeq(function thunk() {
-        if (isEmpty(coll)) return coll;
+        if (isEmpty(coll)) return nil;
         var x = fn(first(coll)),
             ys = keep(fn, rest(coll));
         return exists(x) ? cons(x, ys) : ys;
@@ -565,6 +562,7 @@ function cycle(coll) {
       return concat(seq(coll), cycle(seq(coll)));
     });
   }
+  return nil;
 }
 
 function range(start, end, step) {

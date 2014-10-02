@@ -173,7 +173,7 @@ describe('take', function() {
 describe('takeWhile', function() {
   it('takes given a predicate function', function() {
     var nums = [1,1,2,3,4];
-    takeWhile(function(n) { return n < 3; }, nums).should.eql([1,1,2]);
+    into([], takeWhile(function(n) { return n < 3; }, nums)).should.eql([1,1,2]);
   });
   it('works as a transducer', function () {
     var lessThan6 = function lessThan6(x) { return x < 6; };
