@@ -357,7 +357,7 @@ function zipMap(keys, vals) {
 
 function mapKeys(fn, coll) {
   function keyFn(x) {
-    return MapEntry(fn(x.key), x.val);
+    return MapEntry(fn(first(x)), second(x));
   }
   switch (arguments.length) {
     case 1: return map(keyFn);
@@ -368,7 +368,7 @@ function mapKeys(fn, coll) {
 
 function mapVals(fn, coll) {
   function valFn(x) {
-    return MapEntry(x.key, fn(x.val));
+    return MapEntry(first(x), fn(second(x)));
   }
   switch (arguments.length) {
     case 1: return map(valFn);

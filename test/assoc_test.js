@@ -55,12 +55,20 @@ describe('mapKeys', function() {
     var a = {a: 1, b: 2};
     into({}, mapKeys(function(x) { return x.toUpperCase() }), a).should.eql({A: 1, B: 2});
   });
+  it('works with map-entry likes', function() {
+    var x = [ ['a', 1] ]
+    into({}, mapKeys(function(x) { return x.toUpperCase() }), x).should.eql({A: 1});
+  });
 });
 
 describe('mapVals', function() {
   it('maps over vals', function() {
     var a = {a: 1, b: 2};
     into({}, mapVals(inc), a).should.eql({a: 2, b: 3});
+  });
+  it('works with map-entry likes', function() {
+    var x = [ Vector('a', 1) ]
+    into({}, mapVals(inc), x).should.eql({a: 2});
   });
 });
 
