@@ -229,9 +229,10 @@ function drop(n, seq) {
   switch (arguments.length) {
     case 1: return dropping(n);
     case 2:
-      while (n > 0 && seqable(seq)) {
-        seq = rest(seq);
-        n -= 1;
+      if (n > 0 && seqable(seq)) {
+        return LazySeq(function() {
+          return drop(n-1, rest(seq));
+        });
       }
       return seq;
   }
@@ -428,21 +429,24 @@ function keep(fn, seq) {
   }
 }
 
-function partition(n, step, seq) {
+function partitioning() {
+  throw new Error("Partitioning transducer not implemented...");
+}
+
+function partition(n, seq) {
   switch (arguments.length) {
+    case 1: return partitioning(n);
     case 2:
-      seq = arguments[1];
-      return partition(n, n, seq);
-    case 3:
-      return LazySeq(function thunk() {
-        var part = collect(take(n), seq);
-        if (count(part) !== n) {
-          return empty(seq);
-        } else {
-          return cons(part, partition(n, step, drop(step, seq)));
-        }
-      });
-    default: return nil;
+      var part = take(n, seq),
+          shiftedSeq = drop(n-1, seq);
+      if (seqable(shiftedSeq)) {
+        return LazySeq(function thunk() {
+          var xs = into(empty(seq), part),
+              ys = partition(n, rest(shiftedSeq));
+          return cons(xs, ys);
+        });
+      }
+      return nil;
   }
 }
 
@@ -451,13 +455,12 @@ function concat(a, b) {
     case 0: return LazySeq(function() { return Vector(); });
     case 1: return LazySeq(function() { return a; });
     case 2:
-      return LazySeq(function() {
-        if (seqable(a)) {
+      if (seqable(a)) {
+        return LazySeq(function() {
           return cons(first(a), concat(rest(a), b));
-        }
-        return b;
-      });
-    default: return nil;
+        });
+      }
+      return b;
   }
 }
 

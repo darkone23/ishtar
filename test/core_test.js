@@ -191,8 +191,8 @@ describe('takeWhile', function() {
 
 describe('drop', function() {
   it('drops from seqs', function() {
-    drop(3, [0,1,2,3,4,5]).should.eql([3,4,5]);
-    drop(10, [0,1,2,3,4,5]).should.eql([]);
+    into([], drop(3, [0,1,2,3,4,5])).should.eql([3,4,5]);
+    into([], drop(10, [0,1,2,3,4,5])).should.eql([]);
   });
   it('works as a transducer', function() {
     transduce(drop(2), append, [], [1,2,3,4,5]).should.eql([3,4,5]);
