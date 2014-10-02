@@ -4,6 +4,14 @@ var should = require('should');
 var ishtar = require("../core");
 ishtar.exports(global);
 
+describe('nth', function() {
+  it('returns the nth element (0 indexed)', function() {
+    nth(0, range()).should.eql(0);
+    nth(4, range(0, 5)).should.eql(4);
+    nth(5, range(0, 5)).should.eql(nil);
+  });
+});
+
 describe('map', function() {
 
   it('works on arrays', function() {

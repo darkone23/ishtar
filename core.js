@@ -82,8 +82,13 @@ function forall(fn, coll) {
   }, true, coll);
 }
 
+function nth(n, coll) {
+  coll = drop(n, coll);
+  return seqable(coll) ? first(coll) : nil;
+}
+
 function second(coll) {
-  return first(rest(coll));
+  return nth(1, coll);
 }
 
 function last(coll) {
@@ -643,6 +648,7 @@ module.exports = {
   seq: seq,
   first: first,
   rest: rest,
+  nth: nth,
   cons: cons,
   second: second,
   last: last,
